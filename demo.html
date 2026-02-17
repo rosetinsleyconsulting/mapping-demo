@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rose Tinsley Consulting - Pilgrims Hatch Analysis</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat'; overflow: hidden; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .header { position: absolute; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 20px 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; max-width: 500px; }
+        .header h1 { font-size: 22px; font-weight: 900; color: #2D2D2A; margin-bottom: 8px; }
+        .header h3 { font-size: 18px; font-weight: 600; color: #2D2D2A; margin-bottom: 8px; }
+        .header h5 { font-size: 14px; font-weight: 400; color: #2D2D2A; margin-bottom: 8px; }
+        .header p { font-size: 14px; color: #5a6c7d; line-height: 1.5; }
+        .legend { position: absolute; bottom: 30px; right: 20px; background: rgba(255, 255, 255, 0.95); padding: 18px 22px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; min-width: 220px; }
+        .legend h3 { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 13px; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #5a6c7d; }
+        .legend-color { width: 20px; height: 20px; border-radius: 3px; margin-right: 10px; border: 1px solid rgba(0,0,0,0.1); }
+        .info-box { padding: 12px 16px; background: white; border-radius: 3px; max-width: 300px; }
+        .info-box h4 { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #2c3e50; }
+        .info-box p { margin: 4px 0; font-size: 13px; color: #5a6c7d; }
+        .info-box .label { font-weight: 500; color: #34495e; }
+        .debug { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); color: #fff; padding: 10px; font-family: monospace; font-size: 11px; border-radius: 3px; z-index: 2000; max-width: 300px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Environmental Planning Constraints</h1>
+        <h3>Strategic planning constraint analysis for Essex</h3>
+        <h5>Rose Tinsley Consulting</h5>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="legend">
+        <h3>Planning Constraints</h3>
+        <div class="legend-item"><div class="legend-color" style="background: #9b59b6;"></div><span>Ancient Woodland</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #e74c3c;"></div><span>Conservation Area</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #3498db;"></div><span>Listed Building</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #2ecc71;"></div><span>SSSI</span></div>
+    </div>
+    
+    <div id="debug" class="debug" style="display: none;"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Debug helper
+        const debugDiv = document.getElementById('debug');
+        function debug(msg) {
+            console.log(msg);
+            debugDiv.style.display = 'block';
+            debugDiv.innerHTML += msg + '<br>';
+        }
+        
+        // Initialize map - STAY CENTERED ON PILGRIMS HATCH
+        const map = L.map('map', {
+            center: [51.625, 0.290],
+            zoom: 13,
+            minZoom: 10,
+            maxZoom: 18
+        });
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+        
+        // Track loaded layers
+        let layersLoaded = 0;
+        let totalLayers = 4;
+        
+        // ================================================================
+        // LAYER 1: ANCIENT WOODLAND
+        // ================================================================
+        fetch('ancient_woodland_esx.geojson')
+            .then(response => response.json())
+            .then(data => {
+                debug('Ancient Woodland: ' + data.features.length + ' features');
+                L.geoJSON(data, {
+                    style: {
+                        fillColor: '#9b59b6',
+                        fillOpacity: 0.4,
+                        color: '#9b59b6',
+                        weight: 2,
+                        opacity: 0.8
+                    },
+                    onEachFeature: function(feature, layer) {
+                        let popupContent = '<div class="info-box">';
+                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Ancient Woodland') + '</h4>';
+                        popupContent += '<p><span class="label">Type:</span> Ancient Woodland</p>';
+                        popupContent += '</div>';
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                layersLoaded++;
+            })
+            .catch(error => debug('Ancient Woodland ERROR: ' + error));
+        
+        // ================================================================
+        // LAYER 2: CONSERVATION AREAS
+        // ================================================================
+        fetch('conservation_areas_esx.geojson')
+            .then(response => response.json())
+            .then(data => {
+                debug('Conservation Areas: ' + data.features.length + ' features');
+                L.geoJSON(data, {
+                    style: {
+                        fillColor: '#e74c3c',
+                        fillOpacity: 0.3,
+                        color: '#e74c3c',
+                        weight: 2,
+                        opacity: 0.8
+                    },
+                    onEachFeature: function(feature, layer) {
+                        let popupContent = '<div class="info-box">';
+                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Conservation Area') + '</h4>';
+                        popupContent += '<p><span class="label">Type:</span> Conservation Area</p>';
+                        popupContent += '</div>';
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                layersLoaded++;
+            })
+            .catch(error => debug('Conservation Areas ERROR: ' + error));
+        
+        // ================================================================
+        // LAYER 3: LISTED BUILDINGS
+        // ================================================================
+        fetch('listed_buildings_esx.geojson')
+            .then(response => response.json())
+            .then(data => {
+                debug('Listed Buildings: ' + data.features.length + ' features');
+                L.geoJSON(data, {
+                    pointToLayer: function(feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 6,
+                            fillColor: '#3498db',
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+                    },
+                    onEachFeature: function(feature, layer) {
+                        let popupContent = '<div class="info-box">';
+                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Listed Building') + '</h4>';
+                        if (feature.properties.GRADE || feature.properties.grade) {
+                            popupContent += '<p><span class="label">Grade:</span> ' + (feature.properties.GRADE || feature.properties.grade) + '</p>';
+                        }
+                        popupContent += '<p><span class="label">Type:</span> Listed Building</p>';
+                        popupContent += '</div>';
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                layersLoaded++;
+            })
+            .catch(error => debug('Listed Buildings ERROR: ' + error));
+        
+        // ================================================================
+        // LAYER 4: SSSI - WITH COORDINATE VALIDATION
+        // ================================================================
+        fetch('sssi_esx.geojson')
+            .then(response => response.json())
+            .then(data => {
+                debug('SSSI: ' + data.features.length + ' features');
+                
+                // Check first coordinate to see if projection looks right
+                if (data.features.length > 0) {
+                    const firstCoord = data.features[0].geometry.coordinates;
+                    debug('First SSSI coord: ' + JSON.stringify(firstCoord));
+                    
+                    // Check if coordinates look like British National Grid (huge numbers)
+                    if (Math.abs(firstCoord[0]) > 180 || Math.abs(firstCoord[1]) > 90) {
+                        debug('⚠️ SSSI has wrong projection! Coordinates should be lat/lng');
+                    }
+                }
+                
+                L.geoJSON(data, {
+                    style: {
+                        fillColor: '#2ecc71',
+                        fillOpacity: 0.4,
+                        color: '#2ecc71',
+                        weight: 3,
+                        opacity: 0.9
+                    },
+                    onEachFeature: function(feature, layer) {
+                        let popupContent = '<div class="info-box">';
+                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.SSSI_NAME || feature.properties.name || 'SSSI') + '</h4>';
+                        popupContent += '<p><span class="label">Type:</span> SSSI</p>';
+                        popupContent += '</div>';
+                        layer.bindPopup(popupContent);
+                    }
+                }).addTo(map);
+                layersLoaded++;
+            })
+            .catch(error => debug('SSSI ERROR: ' + error));
+        
+        // Hide debug after 5 seconds if all loaded
+        setTimeout(() => {
+            if (layersLoaded === totalLayers) {
+                debugDiv.style.display = 'none';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
