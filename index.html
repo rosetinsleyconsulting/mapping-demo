@@ -180,6 +180,24 @@
                 <span class="layer-label">SSSI</span>
                 <span class="layer-count" id="count-sssi">–</span>
             </div>
+            <div class="layer-item" onclick="toggleLayer('boundaries')">
+                <div class="layer-checkbox checked" id="cb-boundaries" style="border-color:#2c3e50; background:#2c3e50;"></div>
+                <div class="layer-swatch" style="background:#2c3e50;"></div>
+                <span class="layer-label">Essex Districts</span>
+                <span class="layer-count" id="count-boundaries">–</span>
+            </div>
+            <div class="layer-item" onclick="toggleLayer('buildings')">
+                <div class="layer-checkbox checked" id="cb-buildings" style="border-color:#e67e22; background:#e67e22;"></div>
+                <div class="layer-swatch" style="background:#e67e22;"></div>
+                <span class="layer-label">Buildings</span>
+                <span class="layer-count" id="count-buildings">–</span>
+            </div>
+            <div class="layer-item" onclick="toggleLayer('roads')">
+                <div class="layer-checkbox checked" id="cb-roads" style="border-color:#7f8c8d; background:#7f8c8d;"></div>
+                <div class="layer-swatch" style="background:#7f8c8d;"></div>
+                <span class="layer-label">Roads</span>
+                <span class="layer-count" id="count-roads">–</span>
+            </div>
         </div>
     </div>
 
@@ -251,7 +269,8 @@
             center: [51.625, 0.290],
             zoom: 13,
             minZoom: 8,
-            maxZoom: 18
+            maxZoom: 18,
+            preferCanvas: true
         });
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -260,12 +279,20 @@
             maxZoom: 20
         }).addTo(map);
 
+        // ── Draw-order panes (roads → polygons → points) ──────────────
+        map.createPane('roadPane').style.zIndex    = 350;
+        map.createPane('polygonPane').style.zIndex = 360;
+        map.createPane('pointPane').style.zIndex   = 370;
+
         // ── Layer store ───────────────────────────────────────────────
         const layers = {
-            woodland:     { leaflet: null, data: null, visible: true, color: '#9b59b6' },
-            conservation: { leaflet: null, data: null, visible: true, color: '#e74c3c' },
-            listed:       { leaflet: null, data: null, visible: true, color: '#3498db' },
-            sssi:         { leaflet: null, data: null, visible: true, color: '#2ecc71' }
+            woodland:     { leaflet: null, data: null, visible: true,  color: '#9b59b6' },
+            conservation: { leaflet: null, data: null, visible: true,  color: '#e74c3c' },
+            listed:       { leaflet: null, data: null, visible: true,  color: '#3498db', zoomBand: null },
+            sssi:         { leaflet: null, data: null, visible: true,  color: '#2ecc71' },
+            boundaries:   { leaflet: null, data: null, visible: true,  color: '#2c3e50' },
+            buildings:    { leaflet: null, data: null, visible: true,  color: '#e67e22', zoomBand: null, filename: 'buildings.geojson', fetching: false },
+            roads:        { leaflet: null, data: null, visible: true,  color: '#7f8c8d', zoomBand: null, filename: 'osm_roads.geojson',  fetching: false }
         };
 
         const filters = { grade: 'all', woodland: 'all', caDate: 'all', search: '' };
@@ -296,15 +323,28 @@
         // ── Layer visibility ──────────────────────────────────────────
         function toggleLayer(key) {
             const entry = layers[key];
-            if (!entry.leaflet) return;
             entry.visible = !entry.visible;
             const cb = document.getElementById('cb-' + key);
+
             if (entry.visible) {
-                entry.leaflet.addTo(map);
                 cb.classList.add('checked');
                 cb.style.background = entry.color;
+                if (!entry.data && entry.filename) {
+                    // Background prefetch not yet complete — start it if not already running
+                    if (!entry.fetching) loadLayer(key, entry.filename);
+                    // Layer will auto-appear on map once download finishes
+                } else if (entry.leaflet) {
+                    // Data already loaded — rebuild with current zoom if zoom-sensitive
+                    if ('zoomBand' in entry) {
+                        entry.zoomBand = null; // force rebuild at current zoom
+                        rebuildZoomLayer(key);
+                    } else {
+                        entry.leaflet.addTo(map);
+                    }
+                }
             } else {
-                map.removeLayer(entry.leaflet);
+                if (entry.leaflet) map.removeLayer(entry.leaflet);
+                if ('zoomBand' in entry) entry.zoomBand = null; // stale on next show
                 cb.classList.remove('checked');
                 cb.style.background = 'white';
             }
@@ -339,7 +379,7 @@
 
             Object.keys(layers).forEach(key => {
                 const entry = layers[key];
-                if (!entry.data || !entry.leaflet) return;
+                if (!entry.data || !entry.leaflet || !entry.visible) return;
 
                 if (map.hasLayer(entry.leaflet)) map.removeLayer(entry.leaflet);
 
@@ -349,6 +389,7 @@
                 };
 
                 entry.leaflet = buildLayer(key, filtered);
+                if ('zoomBand' in entry) entry.zoomBand = getZoomBand(key, map.getZoom());
                 if (entry.visible) entry.leaflet.addTo(map);
                 document.getElementById('count-' + key).textContent = filtered.features.length;
             });
@@ -356,11 +397,32 @@
 
         function passesFilter(key, feature) {
             const p = feature.properties;
+            const zoom = map.getZoom();
 
             // Global name search
             if (filters.search) {
                 const name = (p.NAME || p.name || p.Name || '').toLowerCase();
                 if (!name.includes(filters.search)) return false;
+            }
+
+            // Zoom-dependent: listed buildings only appear when zoomed in close
+            if (key === 'listed' && zoom < 13) return false;
+
+            // Zoom-dependent: buildings only appear at close zoom
+            if (key === 'buildings' && zoom < 16) return false;
+
+            // Zoom-dependent: roads reveal more detail as you zoom in
+            if (key === 'roads') {
+                const fclass = p.fclass || '';
+                let minZoom = 15; // service, footway, path, cycleway, tracks etc.
+                if      (fclass === 'motorway'    || fclass === 'motorway_link')  minZoom = 0;
+                else if (fclass === 'trunk'       || fclass === 'trunk_link')     minZoom = 10;
+                else if (fclass === 'primary'     || fclass === 'primary_link')   minZoom = 12;
+                else if (fclass === 'secondary'   || fclass === 'secondary_link') minZoom = 12;
+                else if (fclass === 'tertiary'    || fclass === 'tertiary_link')  minZoom = 13;
+                else if (fclass === 'residential' || fclass === 'unclassified'
+                                                  || fclass === 'living_street')  minZoom = 14;
+                if (zoom < minZoom) return false;
             }
 
             if (key === 'listed' && filters.grade !== 'all') {
@@ -404,11 +466,15 @@
                 case 'conservation': return buildConservationLayer(data);
                 case 'listed':       return buildListedLayer(data);
                 case 'sssi':         return buildSSSILayer(data);
+                case 'boundaries':   return buildBoundariesLayer(data);
+                case 'buildings':    return buildBuildingsLayer(data);
+                case 'roads':        return buildRoadsLayer(data);
             }
         }
 
         function buildWoodlandLayer(data) {
             return L.geoJSON(data, {
+                pane: 'polygonPane',
                 style: { fillColor: '#9b59b6', fillOpacity: 0.4, color: '#9b59b6', weight: 2, opacity: 0.8 },
                 onEachFeature: function(feature, layer) {
                     const p = feature.properties;
@@ -426,6 +492,7 @@
 
         function buildConservationLayer(data) {
             return L.geoJSON(data, {
+                pane: 'polygonPane',
                 style: { fillColor: '#e74c3c', fillOpacity: 0.3, color: '#e74c3c', weight: 2, opacity: 0.8 },
                 onEachFeature: function(feature, layer) {
                     const p = feature.properties;
@@ -448,6 +515,7 @@
             return L.geoJSON(data, {
                 pointToLayer: function(feature, latlng) {
                     return L.circleMarker(latlng, {
+                        pane: 'pointPane',
                         radius: 6, fillColor: '#3498db', color: '#fff',
                         weight: 2, opacity: 1, fillOpacity: 0.8
                     });
@@ -470,6 +538,7 @@
 
         function buildSSSILayer(data) {
             return L.geoJSON(data, {
+                pane: 'polygonPane',
                 style: { fillColor: '#2ecc71', fillOpacity: 0.4, color: '#2ecc71', weight: 3, opacity: 0.9 },
                 onEachFeature: function(feature, layer) {
                     const p = feature.properties;
@@ -486,31 +555,158 @@
             });
         }
 
+        function buildBoundariesLayer(data) {
+            return L.geoJSON(data, {
+                pane: 'polygonPane',
+                style: { fillColor: '#2c3e50', fillOpacity: 0.05, color: '#2c3e50', weight: 2.5, opacity: 0.9 },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#2c3e50;">Essex District</div>';
+                    c += '<h4>' + (p.LAD25NM || 'District') + '</h4>';
+                    if (p.LAD25CD) c += '<p><span class="label">Code:</span> ' + p.LAD25CD + '</p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        function buildBuildingsLayer(data) {
+            return L.geoJSON(data, {
+                pane: 'polygonPane',
+                style: { fillColor: '#e67e22', fillOpacity: 0.5, color: '#e67e22', weight: 1, opacity: 0.7 },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#e67e22;">Building</div>';
+                    c += '<h4>' + (p.name || 'Building') + '</h4>';
+                    if (p.type)   c += '<p><span class="label">Type:</span> ' + p.type + '</p>';
+                    if (p.osm_id) c += '<p><span class="label">OSM ID:</span> ' + p.osm_id + '</p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        function getRoadColor(fclass) {
+            if (!fclass) return '#95a5a6';
+            if (fclass === 'motorway'   || fclass === 'motorway_link')  return '#e74c3c';
+            if (fclass === 'trunk'      || fclass === 'trunk_link')     return '#e67e22';
+            if (fclass === 'primary'    || fclass === 'primary_link')   return '#f39c12';
+            if (fclass === 'secondary'  || fclass === 'secondary_link') return '#f1c40f';
+            if (fclass === 'tertiary'   || fclass === 'tertiary_link')  return '#27ae60';
+            if (fclass === 'residential'|| fclass === 'living_street')  return '#3498db';
+            return '#95a5a6';
+        }
+
+        function buildRoadsLayer(data) {
+            return L.geoJSON(data, {
+                pane: 'roadPane',
+                style: function(feature) {
+                    return { color: getRoadColor(feature.properties.fclass), weight: 1.5, opacity: 0.7 };
+                },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    const color = getRoadColor(p.fclass);
+                    let c = '<div class="info-box"><div class="type-badge" style="background:' + color + ';">Road</div>';
+                    c += '<h4>' + (p.name || p.ref || p.fclass || 'Road') + '</h4>';
+                    if (p.fclass)              c += '<p><span class="label">Type:</span> ' + p.fclass + '</p>';
+                    if (p.ref)                 c += '<p><span class="label">Ref:</span> ' + p.ref + '</p>';
+                    if (p.maxspeed > 0)        c += '<p><span class="label">Speed limit:</span> ' + p.maxspeed + ' mph</p>';
+                    if (p.bridge === 'T')      c += '<p><span class="label">Bridge</span></p>';
+                    if (p.tunnel === 'T')      c += '<p><span class="label">Tunnel</span></p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        // ── Zoom-dependent layer refresh ──────────────────────────────
+        function getZoomBand(key, zoom) {
+            if (key === 'buildings') return zoom >= 16 ? 1 : 0;
+            if (key === 'listed')    return zoom >= 13 ? 1 : 0;
+            if (key === 'roads') {
+                if (zoom < 10) return 0;
+                if (zoom < 12) return 1;
+                if (zoom < 13) return 2;
+                if (zoom < 14) return 3;
+                if (zoom < 15) return 4;
+                return 5;
+            }
+            return 0;
+        }
+
+        function rebuildZoomLayer(key) {
+            const entry = layers[key];
+            if (!entry.data) return;
+            const zoom = map.getZoom();
+            const band = getZoomBand(key, zoom);
+            if (band === entry.zoomBand) {
+                // No change in which features should be visible — just ensure map state is right
+                if (entry.visible && entry.leaflet && !map.hasLayer(entry.leaflet)) {
+                    entry.leaflet.addTo(map);
+                }
+                return;
+            }
+            entry.zoomBand = band;
+            if (entry.leaflet && map.hasLayer(entry.leaflet)) map.removeLayer(entry.leaflet);
+            const filtered = {
+                type: 'FeatureCollection',
+                features: entry.data.features.filter(f => passesFilter(key, f))
+            };
+            entry.leaflet = buildLayer(key, filtered);
+            if (entry.visible) entry.leaflet.addTo(map);
+            document.getElementById('count-' + key).textContent = filtered.features.length;
+        }
+
+        function applyZoomFilters() {
+            ['listed', 'buildings', 'roads'].forEach(key => {
+                if (!layers[key].visible) return; // skip hidden layers entirely
+                rebuildZoomLayer(key);
+            });
+        }
+
+        map.on('zoomend', applyZoomFilters);
+
         // ── Load data ─────────────────────────────────────────────────
         let layersLoaded = 0;
-        const totalLayers = 4;
+        const totalLayers = 5;
 
         function loadLayer(key, filename) {
+            if (layers[key].fetching || layers[key].data) return; // already loading or loaded
+            layers[key].fetching = true;
             fetch(filename)
                 .then(r => r.json())
                 .then(data => {
+                    layers[key].fetching = false;
                     debug('✓ ' + filename + ': ' + data.features.length + ' features');
-                    layers[key].data    = data;
-                    layers[key].leaflet = buildLayer(key, data);
-                    layers[key].leaflet.addTo(map);
-                    document.getElementById('count-' + key).textContent = data.features.length;
+                    layers[key].data = data;
+                    const initFiltered = {
+                        type: 'FeatureCollection',
+                        features: data.features.filter(f => passesFilter(key, f))
+                    };
+                    layers[key].leaflet = buildLayer(key, initFiltered);
+                    if ('zoomBand' in layers[key]) layers[key].zoomBand = getZoomBand(key, map.getZoom());
+                    if (layers[key].visible) layers[key].leaflet.addTo(map);
+                    document.getElementById('count-' + key).textContent = initFiltered.features.length;
                     layersLoaded++;
                     if (layersLoaded === totalLayers) {
                         setTimeout(() => { debugDiv.style.display = 'none'; }, 3000);
+                        // Main layers ready — silently prefetch large layers in background
+                        loadLayer('buildings', 'buildings.geojson');
+                        loadLayer('roads',     'osm_roads.geojson');
                     }
                 })
-                .catch(err => debug('✗ ' + filename + ': ' + err));
+                .catch(err => {
+                    layers[key].fetching = false;
+                    debug('✗ ' + filename + ': ' + err);
+                });
         }
 
         loadLayer('woodland',     'ancient_woodland_esx.geojson');
         loadLayer('conservation', 'conservation_areas_esx.geojson');
         loadLayer('listed',       'listed_buildings_esx.geojson');
         loadLayer('sssi',         'sssi_esx.geojson');
+        loadLayer('boundaries',   'essex_boundaries.geojson');
+        // buildings and roads are lazy-loaded on first user toggle
 
     </script>
 </body>
