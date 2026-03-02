@@ -5,24 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rose Tinsley Consulting - Pilgrims Hatch Analysis</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat'; overflow: hidden; }
+        body { font-family: 'Montserrat', sans-serif; overflow: hidden; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        .header { position: absolute; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 20px 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; max-width: 500px; }
-        .header h1 { font-size: 22px; font-weight: 900; color: #2D2D2A; margin-bottom: 8px; }
-        .header h3 { font-size: 18px; font-weight: 600; color: #2D2D2A; margin-bottom: 8px; }
-        .header h5 { font-size: 14px; font-weight: 400; color: #2D2D2A; margin-bottom: 8px; }
-        .header p { font-size: 14px; color: #5a6c7d; line-height: 1.5; }
-        .legend { position: absolute; bottom: 30px; right: 20px; background: rgba(255, 255, 255, 0.95); padding: 18px 22px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; min-width: 220px; }
-        .legend h3 { font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 13px; }
-        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #5a6c7d; }
-        .legend-color { width: 20px; height: 20px; border-radius: 3px; margin-right: 10px; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* ── Header ── */
+        .header {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(255,255,255,0.95);
+            padding: 20px 30px; border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000; max-width: 500px;
+        }
+        .header h1 { font-size: 20px; font-weight: 900; color: #2D2D2A; margin-bottom: 4px; }
+        .header h3 { font-size: 14px; font-weight: 600; color: #2D2D2A; margin-bottom: 4px; }
+        .header h5 { font-size: 12px; font-weight: 400; color: #7f8c8d; }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 8px;
+            z-index: 1001;
+        }
+        .tool-btn {
+            display: flex; align-items: center; gap: 7px;
+            padding: 10px 18px;
+            background: white; border: none; border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px; font-weight: 600; color: #2D2D2A;
+            cursor: pointer; transition: all 0.15s;
+            user-select: none;
+        }
+        .tool-btn:hover { background: #f5f5f5; }
+        .tool-btn.active { background: #2D2D2A; color: white; }
+        .tool-btn .btn-icon { font-size: 15px; }
+
+        /* ── Popout panels ── */
+        .popout {
+            position: absolute; bottom: 86px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            z-index: 1000;
+            display: none;
+            animation: slideUp 0.18s ease;
+        }
+        .popout.visible { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .popout-header {
+            padding: 13px 16px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .popout-header h3 { font-size: 13px; font-weight: 600; color: #2D2D2A; }
+        .popout-body { padding: 12px 16px 14px; }
+
+        /* ── Layer panel ── */
+        #layer-panel { left: 50%; transform: translateX(-280px); min-width: 230px; }
+        .layer-item {
+            display: flex; align-items: center;
+            margin-bottom: 9px; cursor: pointer;
+            user-select: none;
+        }
+        .layer-item:last-child { margin-bottom: 0; }
+        .layer-checkbox {
+            width: 16px; height: 16px; border-radius: 3px;
+            margin-right: 10px; border: 2px solid;
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .layer-checkbox.checked::after {
+            content: '✓'; font-size: 10px; color: white; font-weight: 700;
+        }
+        .layer-swatch {
+            width: 14px; height: 14px; border-radius: 2px;
+            margin-right: 8px; flex-shrink: 0; opacity: 0.85;
+        }
+        .layer-label { font-size: 13px; color: #2D2D2A; }
+        .layer-count { font-size: 11px; color: #aaa; margin-left: auto; padding-left: 8px; }
+
+        /* ── Filter panel ── */
+        #filter-panel { left: 50%; transform: translateX(20px); min-width: 260px; max-width: 300px; }
+        .filter-section { margin-bottom: 14px; }
+        .filter-section:last-child { margin-bottom: 0; }
+        .filter-section label {
+            display: block; font-size: 11px; font-weight: 600;
+            color: #7f8c8d; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 6px;
+        }
+        .filter-section select, .filter-section input {
+            width: 100%; padding: 6px 8px;
+            border: 1px solid #e0e0e0; border-radius: 3px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px; color: #2D2D2A;
+            background: white;
+        }
+        .filter-section select:focus, .filter-section input:focus {
+            outline: none; border-color: #3498db;
+        }
+        .filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+        .chip {
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 500; cursor: pointer;
+            border: 1.5px solid; transition: all 0.15s;
+            user-select: none;
+        }
+        .chip.active { color: white; }
+        .chip.inactive { background: white !important; color: #aaa; }
+        .filter-reset {
+            width: 100%; padding: 7px; margin-top: 12px;
+            background: #f5f5f5; border: none; border-radius: 3px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px; font-weight: 600; color: #7f8c8d;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .filter-reset:hover { background: #ebebeb; }
+
+        /* ── Popup ── */
         .info-box { padding: 12px 16px; background: white; border-radius: 3px; max-width: 300px; }
-        .info-box h4 { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #2c3e50; }
-        .info-box p { margin: 4px 0; font-size: 13px; color: #5a6c7d; }
-        .info-box .label { font-weight: 500; color: #34495e; }
+        .info-box h4 { margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #2D2D2A; }
+        .info-box p { margin: 4px 0; font-size: 12px; color: #5a6c7d; line-height: 1.5; }
+        .info-box .label { font-weight: 600; color: #34495e; }
+        .info-box a { color: #3498db; font-size: 12px; text-decoration: none; }
+        .info-box a:hover { text-decoration: underline; }
+        .type-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 20px;
+            font-size: 10px; font-weight: 600; color: white; margin-bottom: 8px;
+        }
+
+        /* ── Debug ── */
         .debug { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); color: #fff; padding: 10px; font-family: monospace; font-size: 11px; border-radius: 3px; z-index: 2000; max-width: 300px; }
     </style>
 </head>
@@ -32,179 +149,369 @@
         <h3>Strategic planning constraint analysis for Essex</h3>
         <h5>Rose Tinsley Consulting</h5>
     </div>
-    
+
     <div id="map"></div>
-    
-    <div class="legend">
-        <h3>Planning Constraints</h3>
-        <div class="legend-item"><div class="legend-color" style="background: #9b59b6;"></div><span>Ancient Woodland</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #e74c3c;"></div><span>Conservation Area</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #3498db;"></div><span>Listed Building</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #2ecc71;"></div><span>SSSI</span></div>
+
+    <!-- Popout: Layer selector -->
+    <div id="layer-panel" class="popout">
+        <div class="popout-header"><h3>Layers</h3></div>
+        <div class="popout-body">
+            <div class="layer-item" onclick="toggleLayer('woodland')">
+                <div class="layer-checkbox checked" id="cb-woodland" style="border-color:#9b59b6; background:#9b59b6;"></div>
+                <div class="layer-swatch" style="background:#9b59b6;"></div>
+                <span class="layer-label">Ancient Woodland</span>
+                <span class="layer-count" id="count-woodland">–</span>
+            </div>
+            <div class="layer-item" onclick="toggleLayer('conservation')">
+                <div class="layer-checkbox checked" id="cb-conservation" style="border-color:#e74c3c; background:#e74c3c;"></div>
+                <div class="layer-swatch" style="background:#e74c3c;"></div>
+                <span class="layer-label">Conservation Areas</span>
+                <span class="layer-count" id="count-conservation">–</span>
+            </div>
+            <div class="layer-item" onclick="toggleLayer('listed')">
+                <div class="layer-checkbox checked" id="cb-listed" style="border-color:#3498db; background:#3498db;"></div>
+                <div class="layer-swatch" style="background:#3498db;"></div>
+                <span class="layer-label">Listed Buildings</span>
+                <span class="layer-count" id="count-listed">–</span>
+            </div>
+            <div class="layer-item" onclick="toggleLayer('sssi')">
+                <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#2ecc71; background:#2ecc71;"></div>
+                <div class="layer-swatch" style="background:#2ecc71;"></div>
+                <span class="layer-label">SSSI</span>
+                <span class="layer-count" id="count-sssi">–</span>
+            </div>
+        </div>
     </div>
-    
+
+    <!-- Popout: Filters -->
+    <div id="filter-panel" class="popout">
+        <div class="popout-header"><h3>Filters</h3></div>
+        <div class="popout-body">
+            <div class="filter-section">
+                <label>Listed Building Grade</label>
+                <div class="filter-chips">
+                    <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#3498db; background:#3498db;">All</div>
+                    <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#3498db; background:#3498db;">Grade I</div>
+                    <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#3498db; background:#3498db;">Grade II*</div>
+                    <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#3498db; background:#3498db;">Grade II</div>
+                </div>
+            </div>
+            <div class="filter-section">
+                <label>Woodland Type</label>
+                <div class="filter-chips">
+                    <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#9b59b6; background:#9b59b6;">All</div>
+                    <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#9b59b6; background:#9b59b6;">ASNW</div>
+                    <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#9b59b6; background:#9b59b6;">PAWS</div>
+                </div>
+            </div>
+            <div class="filter-section">
+                <label>Conservation Designated After</label>
+                <select id="filter-ca-date" onchange="applyFilters()">
+                    <option value="all">All dates</option>
+                    <option value="1970">After 1970</option>
+                    <option value="1980">After 1980</option>
+                    <option value="1990">After 1990</option>
+                    <option value="2000">After 2000</option>
+                    <option value="2010">After 2010</option>
+                </select>
+            </div>
+            <div class="filter-section">
+                <label>Search by Name</label>
+                <input type="text" id="filter-search" placeholder="Type to search…" oninput="applyFilters()" />
+            </div>
+            <button class="filter-reset" onclick="resetFilters()">↺ Reset All Filters</button>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="tool-btn" id="btn-layers" onclick="togglePopout('layer-panel', 'btn-layers')">
+            <span class="btn-icon">◧</span> Layers
+        </button>
+        <button class="tool-btn" id="btn-filters" onclick="togglePopout('filter-panel', 'btn-filters')">
+            <span class="btn-icon">⊟</span> Filters
+        </button>
+    </div>
+
     <div id="debug" class="debug" style="display: none;"></div>
-    
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Debug helper
+
+        // ── Debug ─────────────────────────────────────────────────────
         const debugDiv = document.getElementById('debug');
         function debug(msg) {
             console.log(msg);
             debugDiv.style.display = 'block';
             debugDiv.innerHTML += msg + '<br>';
         }
-        
-        // Initialize map - STAY CENTERED ON PILGRIMS HATCH
+
+        // ── Map init ──────────────────────────────────────────────────
         const map = L.map('map', {
             center: [51.625, 0.290],
             zoom: 13,
-            minZoom: 10,
+            minZoom: 8,
             maxZoom: 18
         });
-        
+
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap © CARTO',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
-        
-        // Track loaded layers
-        let layersLoaded = 0;
-        let totalLayers = 4;
-        
-        // ================================================================
-        // LAYER 1: ANCIENT WOODLAND
-        // ================================================================
-        fetch('ancient_woodland_esx.geojson')
-            .then(response => response.json())
-            .then(data => {
-                debug('Ancient Woodland: ' + data.features.length + ' features');
-                L.geoJSON(data, {
-                    style: {
-                        fillColor: '#9b59b6',
-                        fillOpacity: 0.4,
-                        color: '#9b59b6',
-                        weight: 2,
-                        opacity: 0.8
-                    },
-                    onEachFeature: function(feature, layer) {
-                        let popupContent = '<div class="info-box">';
-                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Ancient Woodland') + '</h4>';
-                        popupContent += '<p><span class="label">Type:</span> Ancient Woodland</p>';
-                        popupContent += '</div>';
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-                layersLoaded++;
-            })
-            .catch(error => debug('Ancient Woodland ERROR: ' + error));
-        
-        // ================================================================
-        // LAYER 2: CONSERVATION AREAS
-        // ================================================================
-        fetch('conservation_areas_esx.geojson')
-            .then(response => response.json())
-            .then(data => {
-                debug('Conservation Areas: ' + data.features.length + ' features');
-                L.geoJSON(data, {
-                    style: {
-                        fillColor: '#e74c3c',
-                        fillOpacity: 0.3,
-                        color: '#e74c3c',
-                        weight: 2,
-                        opacity: 0.8
-                    },
-                    onEachFeature: function(feature, layer) {
-                        let popupContent = '<div class="info-box">';
-                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Conservation Area') + '</h4>';
-                        popupContent += '<p><span class="label">Type:</span> Conservation Area</p>';
-                        popupContent += '</div>';
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-                layersLoaded++;
-            })
-            .catch(error => debug('Conservation Areas ERROR: ' + error));
-        
-        // ================================================================
-        // LAYER 3: LISTED BUILDINGS
-        // ================================================================
-        fetch('listed_buildings_esx.geojson')
-            .then(response => response.json())
-            .then(data => {
-                debug('Listed Buildings: ' + data.features.length + ' features');
-                L.geoJSON(data, {
-                    pointToLayer: function(feature, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 6,
-                            fillColor: '#3498db',
-                            color: '#fff',
-                            weight: 2,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        });
-                    },
-                    onEachFeature: function(feature, layer) {
-                        let popupContent = '<div class="info-box">';
-                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.name || 'Listed Building') + '</h4>';
-                        if (feature.properties.GRADE || feature.properties.grade) {
-                            popupContent += '<p><span class="label">Grade:</span> ' + (feature.properties.GRADE || feature.properties.grade) + '</p>';
-                        }
-                        popupContent += '<p><span class="label">Type:</span> Listed Building</p>';
-                        popupContent += '</div>';
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-                layersLoaded++;
-            })
-            .catch(error => debug('Listed Buildings ERROR: ' + error));
-        
-        // ================================================================
-        // LAYER 4: SSSI - WITH COORDINATE VALIDATION
-        // ================================================================
-        fetch('sssi_esx.geojson')
-            .then(response => response.json())
-            .then(data => {
-                debug('SSSI: ' + data.features.length + ' features');
-                
-                // Check first coordinate to see if projection looks right
-                if (data.features.length > 0) {
-                    const firstCoord = data.features[0].geometry.coordinates;
-                    debug('First SSSI coord: ' + JSON.stringify(firstCoord));
-                    
-                    // Check if coordinates look like British National Grid (huge numbers)
-                    if (Math.abs(firstCoord[0]) > 180 || Math.abs(firstCoord[1]) > 90) {
-                        debug('⚠️ SSSI has wrong projection! Coordinates should be lat/lng');
-                    }
-                }
-                
-                L.geoJSON(data, {
-                    style: {
-                        fillColor: '#2ecc71',
-                        fillOpacity: 0.4,
-                        color: '#2ecc71',
-                        weight: 3,
-                        opacity: 0.9
-                    },
-                    onEachFeature: function(feature, layer) {
-                        let popupContent = '<div class="info-box">';
-                        popupContent += '<h4>' + (feature.properties.NAME || feature.properties.SSSI_NAME || feature.properties.name || 'SSSI') + '</h4>';
-                        popupContent += '<p><span class="label">Type:</span> SSSI</p>';
-                        popupContent += '</div>';
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-                layersLoaded++;
-            })
-            .catch(error => debug('SSSI ERROR: ' + error));
-        
-        // Hide debug after 5 seconds if all loaded
-        setTimeout(() => {
-            if (layersLoaded === totalLayers) {
-                debugDiv.style.display = 'none';
+
+        // ── Layer store ───────────────────────────────────────────────
+        const layers = {
+            woodland:     { leaflet: null, data: null, visible: true, color: '#9b59b6' },
+            conservation: { leaflet: null, data: null, visible: true, color: '#e74c3c' },
+            listed:       { leaflet: null, data: null, visible: true, color: '#3498db' },
+            sssi:         { leaflet: null, data: null, visible: true, color: '#2ecc71' }
+        };
+
+        const filters = { grade: 'all', woodland: 'all', caDate: 'all', search: '' };
+
+        // ── Popout toggle ─────────────────────────────────────────────
+        function togglePopout(panelId, btnId) {
+            const panel = document.getElementById(panelId);
+            const btn   = document.getElementById(btnId);
+            const isOpen = panel.classList.contains('visible');
+
+            // Close all popouts and deactivate all buttons first
+            document.querySelectorAll('.popout').forEach(p => p.classList.remove('visible'));
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+
+            // If it wasn't open, open it now
+            if (!isOpen) {
+                panel.classList.add('visible');
+                btn.classList.add('active');
             }
-        }, 5000);
+        }
+
+        // Close popouts when clicking on the map
+        document.getElementById('map').addEventListener('click', function() {
+            document.querySelectorAll('.popout').forEach(p => p.classList.remove('visible'));
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        });
+
+        // ── Layer visibility ──────────────────────────────────────────
+        function toggleLayer(key) {
+            const entry = layers[key];
+            if (!entry.leaflet) return;
+            entry.visible = !entry.visible;
+            const cb = document.getElementById('cb-' + key);
+            if (entry.visible) {
+                entry.leaflet.addTo(map);
+                cb.classList.add('checked');
+                cb.style.background = entry.color;
+            } else {
+                map.removeLayer(entry.leaflet);
+                cb.classList.remove('checked');
+                cb.style.background = 'white';
+            }
+        }
+
+        // ── Chip filter clicks ────────────────────────────────────────
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                const filterKey = this.dataset.filter;
+                const value     = this.dataset.value;
+                const color     = filterKey === 'grade' ? '#3498db' : '#9b59b6';
+
+                // Set all chips in group to inactive
+                document.querySelectorAll('[data-filter="' + filterKey + '"]').forEach(c => {
+                    c.classList.remove('active');
+                    c.classList.add('inactive');
+                });
+                // Activate clicked chip
+                this.classList.add('active');
+                this.classList.remove('inactive');
+                this.style.background = color;
+
+                filters[filterKey] = value;
+                applyFilters();
+            });
+        });
+
+        // ── Apply filters ─────────────────────────────────────────────
+        function applyFilters() {
+            filters.caDate = document.getElementById('filter-ca-date').value;
+            filters.search = document.getElementById('filter-search').value.toLowerCase().trim();
+
+            Object.keys(layers).forEach(key => {
+                const entry = layers[key];
+                if (!entry.data || !entry.leaflet) return;
+
+                if (map.hasLayer(entry.leaflet)) map.removeLayer(entry.leaflet);
+
+                const filtered = {
+                    type: 'FeatureCollection',
+                    features: entry.data.features.filter(f => passesFilter(key, f))
+                };
+
+                entry.leaflet = buildLayer(key, filtered);
+                if (entry.visible) entry.leaflet.addTo(map);
+                document.getElementById('count-' + key).textContent = filtered.features.length;
+            });
+        }
+
+        function passesFilter(key, feature) {
+            const p = feature.properties;
+
+            // Global name search
+            if (filters.search) {
+                const name = (p.NAME || p.name || p.Name || '').toLowerCase();
+                if (!name.includes(filters.search)) return false;
+            }
+
+            if (key === 'listed' && filters.grade !== 'all') {
+                if (p.Grade !== filters.grade) return false;
+            }
+
+            if (key === 'woodland' && filters.woodland !== 'all') {
+                if (p.STATUS !== filters.woodland) return false;
+            }
+
+            if (key === 'conservation' && filters.caDate !== 'all') {
+                const year = p.designatio ? parseInt(p.designatio.substring(0, 4)) : 0;
+                if (year < parseInt(filters.caDate)) return false;
+            }
+
+            return true;
+        }
+
+        // ── Reset filters ─────────────────────────────────────────────
+        function resetFilters() {
+            filters.grade = 'all'; filters.woodland = 'all';
+            filters.caDate = 'all'; filters.search = '';
+
+            document.getElementById('filter-ca-date').value = 'all';
+            document.getElementById('filter-search').value  = '';
+
+            document.querySelectorAll('.chip').forEach(chip => {
+                const color = chip.dataset.filter === 'grade' ? '#3498db' : '#9b59b6';
+                chip.classList.add('active');
+                chip.classList.remove('inactive');
+                chip.style.background = color;
+            });
+
+            applyFilters();
+        }
+
+        // ── Layer builders ────────────────────────────────────────────
+        function buildLayer(key, data) {
+            switch(key) {
+                case 'woodland':     return buildWoodlandLayer(data);
+                case 'conservation': return buildConservationLayer(data);
+                case 'listed':       return buildListedLayer(data);
+                case 'sssi':         return buildSSSILayer(data);
+            }
+        }
+
+        function buildWoodlandLayer(data) {
+            return L.geoJSON(data, {
+                style: { fillColor: '#9b59b6', fillOpacity: 0.4, color: '#9b59b6', weight: 2, opacity: 0.8 },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    const name = (p.NAME && p.NAME.trim()) ? p.NAME.trim() : (p.THEMNAME || 'Ancient Woodland');
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#9b59b6;">Ancient Woodland</div>';
+                    c += '<h4>' + name + '</h4>';
+                    if (p.THEMNAME)  c += '<p><span class="label">Type:</span> ' + p.THEMNAME + '</p>';
+                    if (p.STATUS)    c += '<p><span class="label">Status:</span> ' + p.STATUS + '</p>';
+                    if (p.AREA)      c += '<p><span class="label">Area:</span> ' + p.AREA.toFixed(2) + ' ha</p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        function buildConservationLayer(data) {
+            return L.geoJSON(data, {
+                style: { fillColor: '#e74c3c', fillOpacity: 0.3, color: '#e74c3c', weight: 2, opacity: 0.8 },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#e74c3c;">Conservation Area</div>';
+                    c += '<h4>' + (p.name || 'Conservation Area') + '</h4>';
+                    if (p.designatio && p.designatio !== '1970-01-01') {
+                        c += '<p><span class="label">Designated:</span> ' + new Date(p.designatio).toLocaleDateString('en-GB') + '</p>';
+                    }
+                    if (p.reference)     c += '<p><span class="label">Reference:</span> ' + p.reference + '</p>';
+                    if (p.notes)         c += '<p><span class="label">Notes:</span> ' + p.notes + '</p>';
+                    if (p.documentat)    c += '<p><a href="' + p.documentat + '" target="_blank">View Council Page ↗</a></p>';
+                    if (p['document-u']) c += '<p><a href="' + p['document-u'] + '" target="_blank">View Document ↗</a></p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        function buildListedLayer(data) {
+            return L.geoJSON(data, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 6, fillColor: '#3498db', color: '#fff',
+                        weight: 2, opacity: 1, fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#3498db;">Listed Building</div>';
+                    c += '<h4>' + (p.Name || 'Listed Building') + '</h4>';
+                    if (p.Grade)     c += '<p><span class="label">Grade:</span> ' + p.Grade + '</p>';
+                    if (p.NGR)       c += '<p><span class="label">Grid Ref:</span> ' + p.NGR + '</p>';
+                    if (p.ListDate)  c += '<p><span class="label">Listed:</span> ' + new Date(p.ListDate).toLocaleDateString('en-GB') + '</p>';
+                    if (p.hyperlink) c += '<p><a href="' + p.hyperlink + '" target="_blank">View on Historic England ↗</a></p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                    layer.on('mouseover', function() { this.setStyle({ radius: 8, fillOpacity: 1 }); });
+                    layer.on('mouseout',  function() { this.setStyle({ radius: 6, fillOpacity: 0.8 }); });
+                }
+            });
+        }
+
+        function buildSSSILayer(data) {
+            return L.geoJSON(data, {
+                style: { fillColor: '#2ecc71', fillOpacity: 0.4, color: '#2ecc71', weight: 3, opacity: 0.9 },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    let c = '<div class="info-box"><div class="type-badge" style="background:#2ecc71;">SSSI</div>';
+                    c += '<h4>' + (p.name || 'SSSI') + '</h4>';
+                    c += '<p><span class="label">Type:</span> Site of Special Scientific Interest</p>';
+                    if (p.measure)    c += '<p><span class="label">Area:</span> ' + p.measure + ' ha</p>';
+                    if (p.ref_code)   c += '<p><span class="label">Reference:</span> ' + p.ref_code + '</p>';
+                    if (p.contact_no) c += '<p><span class="label">Contact:</span> ' + p.contact_no + '</p>';
+                    if (p.hyperlink)  c += '<p><a href="https://designatedsites.naturalengland.org.uk/SiteDetail.aspx?SiteCode=S' + p.hyperlink + '" target="_blank">View on Natural England ↗</a></p>';
+                    c += '</div>';
+                    layer.bindPopup(c);
+                }
+            });
+        }
+
+        // ── Load data ─────────────────────────────────────────────────
+        let layersLoaded = 0;
+        const totalLayers = 4;
+
+        function loadLayer(key, filename) {
+            fetch(filename)
+                .then(r => r.json())
+                .then(data => {
+                    debug('✓ ' + filename + ': ' + data.features.length + ' features');
+                    layers[key].data    = data;
+                    layers[key].leaflet = buildLayer(key, data);
+                    layers[key].leaflet.addTo(map);
+                    document.getElementById('count-' + key).textContent = data.features.length;
+                    layersLoaded++;
+                    if (layersLoaded === totalLayers) {
+                        setTimeout(() => { debugDiv.style.display = 'none'; }, 3000);
+                    }
+                })
+                .catch(err => debug('✗ ' + filename + ': ' + err));
+        }
+
+        loadLayer('woodland',     'ancient_woodland_esx.geojson');
+        loadLayer('conservation', 'conservation_areas_esx.geojson');
+        loadLayer('listed',       'listed_buildings_esx.geojson');
+        loadLayer('sssi',         'sssi_esx.geojson');
+
     </script>
 </body>
 </html>
