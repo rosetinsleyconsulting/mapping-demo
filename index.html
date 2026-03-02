@@ -186,13 +186,7 @@
                 <span class="layer-label">Essex Districts</span>
                 <span class="layer-count" id="count-boundaries">–</span>
             </div>
-            <div class="layer-item" onclick="toggleLayer('buildings')">
-                <div class="layer-checkbox checked" id="cb-buildings" style="border-color:#e67e22; background:#e67e22;"></div>
-                <div class="layer-swatch" style="background:#e67e22;"></div>
-                <span class="layer-label">Buildings</span>
-                <span class="layer-count" id="count-buildings">–</span>
-            </div>
-            <div class="layer-item" onclick="toggleLayer('roads')">
+<div class="layer-item" onclick="toggleLayer('roads')">
                 <div class="layer-checkbox checked" id="cb-roads" style="border-color:#7f8c8d; background:#7f8c8d;"></div>
                 <div class="layer-swatch" style="background:#7f8c8d;"></div>
                 <span class="layer-label">Roads</span>
@@ -291,7 +285,6 @@
             listed:       { leaflet: null, data: null, visible: true,  color: '#3498db', zoomBand: null },
             sssi:         { leaflet: null, data: null, visible: true,  color: '#2ecc71' },
             boundaries:   { leaflet: null, data: null, visible: true,  color: '#2c3e50' },
-            buildings:    { leaflet: null, data: null, visible: true,  color: '#e67e22', zoomBand: null, filename: 'buildings.geojson', fetching: false },
             roads:        { leaflet: null, data: null, visible: true,  color: '#7f8c8d', zoomBand: null, filename: 'osm_roads.geojson',  fetching: false }
         };
 
@@ -408,10 +401,7 @@
             // Zoom-dependent: listed buildings only appear when zoomed in close
             if (key === 'listed' && zoom < 13) return false;
 
-            // Zoom-dependent: buildings only appear at close zoom
-            if (key === 'buildings' && zoom < 16) return false;
-
-            // Zoom-dependent: roads reveal more detail as you zoom in
+// Zoom-dependent: roads reveal more detail as you zoom in
             if (key === 'roads') {
                 const fclass = p.fclass || '';
                 let minZoom = 15; // service, footway, path, cycleway, tracks etc.
@@ -467,7 +457,6 @@
                 case 'listed':       return buildListedLayer(data);
                 case 'sssi':         return buildSSSILayer(data);
                 case 'boundaries':   return buildBoundariesLayer(data);
-                case 'buildings':    return buildBuildingsLayer(data);
                 case 'roads':        return buildRoadsLayer(data);
             }
         }
@@ -570,23 +559,7 @@
             });
         }
 
-        function buildBuildingsLayer(data) {
-            return L.geoJSON(data, {
-                pane: 'polygonPane',
-                style: { fillColor: '#e67e22', fillOpacity: 0.5, color: '#e67e22', weight: 1, opacity: 0.7 },
-                onEachFeature: function(feature, layer) {
-                    const p = feature.properties;
-                    let c = '<div class="info-box"><div class="type-badge" style="background:#e67e22;">Building</div>';
-                    c += '<h4>' + (p.name || 'Building') + '</h4>';
-                    if (p.type)   c += '<p><span class="label">Type:</span> ' + p.type + '</p>';
-                    if (p.osm_id) c += '<p><span class="label">OSM ID:</span> ' + p.osm_id + '</p>';
-                    c += '</div>';
-                    layer.bindPopup(c);
-                }
-            });
-        }
-
-        function getRoadColor(fclass) {
+function getRoadColor(fclass) {
             if (!fclass) return '#95a5a6';
             if (fclass === 'motorway'   || fclass === 'motorway_link')  return '#e74c3c';
             if (fclass === 'trunk'      || fclass === 'trunk_link')     return '#e67e22';
@@ -621,7 +594,6 @@
 
         // ── Zoom-dependent layer refresh ──────────────────────────────
         function getZoomBand(key, zoom) {
-            if (key === 'buildings') return zoom >= 16 ? 1 : 0;
             if (key === 'listed')    return zoom >= 13 ? 1 : 0;
             if (key === 'roads') {
                 if (zoom < 10) return 0;
@@ -658,7 +630,7 @@
         }
 
         function applyZoomFilters() {
-            ['listed', 'buildings', 'roads'].forEach(key => {
+            ['listed', 'roads'].forEach(key => {
                 if (!layers[key].visible) return; // skip hidden layers entirely
                 rebuildZoomLayer(key);
             });
@@ -690,9 +662,8 @@
                     layersLoaded++;
                     if (layersLoaded === totalLayers) {
                         setTimeout(() => { debugDiv.style.display = 'none'; }, 3000);
-                        // Main layers ready — silently prefetch large layers in background
-                        loadLayer('buildings', 'buildings.geojson');
-                        loadLayer('roads',     'osm_roads.geojson');
+                        // Main layers ready — silently prefetch roads in background
+                        loadLayer('roads', 'osm_roads.geojson');
                     }
                 })
                 .catch(err => {
