@@ -419,10 +419,11 @@
     }).addTo(map);
 
     // Custom draw-order panes
-    map.createPane('roadPane').style.zIndex    = 350;
-    map.createPane('floodPane').style.zIndex   = 355; // canvas pane — below SVG polygons
-    map.createPane('polygonPane').style.zIndex = 360;
-    map.createPane('pointPane').style.zIndex   = 370;
+    map.createPane('greenbeltPane').style.zIndex = 345;
+    map.createPane('roadPane').style.zIndex      = 350;
+    map.createPane('floodPane').style.zIndex     = 355;
+    map.createPane('polygonPane').style.zIndex   = 360;
+    map.createPane('pointPane').style.zIndex     = 370;
 
     // ── Conference pin ────────────────────────────────────────────
     const confIcon = L.divIcon({ className: '', html: '<div class="conf-pin"></div>', iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -26] });
@@ -623,7 +624,7 @@
 
     function buildGreenbeltLayer(data) {
         return L.geoJSON(data, {
-            pane: 'polygonPane',
+            pane: 'greenbeltPane',
             style: { fillColor: '#6F8443', fillOpacity: 0.2, color: '#6F8443', weight: 2, opacity: 0.8, dashArray: '5 4' },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
