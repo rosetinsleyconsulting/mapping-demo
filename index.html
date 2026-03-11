@@ -148,6 +148,51 @@
         }
         .filter-reset:hover { background: rgba(254,255,248,0.1); }
 
+        /* ══ RIGHT FILTER PANEL ══════════════════════════════════════ */
+        .filter-panel {
+            position: fixed;
+            top: 0; right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--brand-deep-moss);
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: -2px 0 16px rgba(45,45,42,0.4);
+            overflow-y: auto;
+        }
+        .filter-panel::-webkit-scrollbar { width: 4px; }
+        .filter-panel::-webkit-scrollbar-thumb { background: rgba(254,255,248,0.15); border-radius: 2px; }
+        .filter-panel.open { transform: translateX(0); }
+        .filter-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 18px 16px;
+            border-bottom: 1px solid rgba(254,255,248,0.1);
+            flex-shrink: 0;
+        }
+        .filter-panel-title {
+            font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--sidebar-dim); font-weight: 700;
+        }
+        .filter-panel-close {
+            width: 26px; height: 26px; border-radius: 3px;
+            background: rgba(254,255,248,0.06); border: 1px solid rgba(254,255,248,0.15);
+            color: var(--sidebar-text); cursor: pointer; font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s; font-family: 'Montserrat', sans-serif;
+        }
+        .filter-panel-close:hover { background: rgba(254,255,248,0.14); }
+        .filter-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(45,45,42,0.3);
+            z-index: 1400;
+            backdrop-filter: blur(1px);
+        }
+        .filter-overlay.open { display: block; }
+
         /* Tool buttons */
         .tool-btn {
             flex: 1; padding: 9px 8px;
@@ -315,52 +360,6 @@
 
     <div class="sidebar-divider"></div>
 
-    <!-- Filters -->
-    <div class="sidebar-section">
-        <div class="sidebar-section-label">Filters</div>
-        <div class="filter-block">
-
-            <span class="filter-label">Listed Building Grade</span>
-            <div class="filter-chips">
-                <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#5E7A8C;background:#5E7A8C;">All</div>
-                <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#5E7A8C;background:#5E7A8C;">Grade I</div>
-                <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#5E7A8C;background:#5E7A8C;">II*</div>
-                <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#5E7A8C;background:#5E7A8C;">Grade II</div>
-            </div>
-
-            <span class="filter-label">Woodland Type</span>
-            <div class="filter-chips">
-                <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#6F8443;background:#6F8443;">All</div>
-                <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#6F8443;background:#6F8443;">ASNW</div>
-                <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
-            </div>
-
-            <span class="filter-label">Flood Zone</span>
-            <div class="filter-chips">
-                <div class="chip active" data-filter="floodzone" data-value="all" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">All</div>
-                <div class="chip active" data-filter="floodzone" data-value="FZ3" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">Zone 3</div>
-                <div class="chip active" data-filter="floodzone" data-value="FZ2" data-color="#6FABD4" style="border-color:#6FABD4;background:#6FABD4;">Zone 2</div>
-            </div>
-
-            <span class="filter-label">Conservation Designated After</span>
-            <select class="filter-select" id="filter-ca-date" onchange="applyFilters()">
-                <option value="all">All dates</option>
-                <option value="1970">After 1970</option>
-                <option value="1980">After 1980</option>
-                <option value="1990">After 1990</option>
-                <option value="2000">After 2000</option>
-                <option value="2010">After 2010</option>
-            </select>
-
-            <span class="filter-label">Search by Name</span>
-            <input class="filter-input" type="text" id="filter-search" placeholder="Type to search…" oninput="applyFilters()" />
-
-            <button class="filter-reset" onclick="resetFilters()">↺ Reset All Filters</button>
-        </div>
-    </div>
-
-    <div class="sidebar-divider"></div>
-
     <!-- Site Analysis -->
     <div class="sidebar-section">
         <div class="sidebar-section-label">Site Analysis</div>
@@ -388,6 +387,56 @@
 
 <!-- MAP -->
 <div id="map"></div>
+
+<!-- Filter overlay backdrop -->
+<div class="filter-overlay" id="filter-overlay" onclick="closeFilterPanel()"></div>
+
+<!-- Right slide-out filter panel -->
+<div class="filter-panel" id="filter-panel">
+    <div class="filter-panel-header">
+        <span class="filter-panel-title">Filters</span>
+        <button class="filter-panel-close" onclick="closeFilterPanel()">✕</button>
+    </div>
+    <div class="filter-block" style="padding-top:4px;">
+
+        <span class="filter-label">Listed Building Grade</span>
+        <div class="filter-chips">
+            <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#5E7A8C;background:#5E7A8C;">All</div>
+            <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#5E7A8C;background:#5E7A8C;">Grade I</div>
+            <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#5E7A8C;background:#5E7A8C;">II*</div>
+            <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#5E7A8C;background:#5E7A8C;">Grade II</div>
+        </div>
+
+        <span class="filter-label">Woodland Type</span>
+        <div class="filter-chips">
+            <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#6F8443;background:#6F8443;">All</div>
+            <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#6F8443;background:#6F8443;">ASNW</div>
+            <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
+        </div>
+
+        <span class="filter-label">Flood Zone</span>
+        <div class="filter-chips">
+            <div class="chip active" data-filter="floodzone" data-value="all" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">All</div>
+            <div class="chip active" data-filter="floodzone" data-value="FZ3" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">Zone 3</div>
+            <div class="chip active" data-filter="floodzone" data-value="FZ2" data-color="#6FABD4" style="border-color:#6FABD4;background:#6FABD4;">Zone 2</div>
+        </div>
+
+        <span class="filter-label">Conservation Designated After</span>
+        <select class="filter-select" id="filter-ca-date" onchange="applyFilters()">
+            <option value="all">All dates</option>
+            <option value="1970">After 1970</option>
+            <option value="1980">After 1980</option>
+            <option value="1990">After 1990</option>
+            <option value="2000">After 2000</option>
+            <option value="2010">After 2010</option>
+        </select>
+
+        <span class="filter-label">Search by Name</span>
+        <input class="filter-input" type="text" id="filter-search" placeholder="Type to search…" oninput="applyFilters()" />
+
+        <button class="filter-reset" onclick="resetFilters()">↺ Reset All Filters</button>
+    </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -431,8 +480,28 @@
             return btn;
         }
     });
+    const FilterCtrl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function() {
+            const btn = L.DomUtil.create('button', 'map-ctrl-btn');
+            btn.innerHTML = '⚙'; btn.title = 'Filters';
+            L.DomEvent.on(btn, 'click', openFilterPanel);
+            L.DomEvent.disableClickPropagation(btn);
+            return btn;
+        }
+    });
     new ResetViewCtrl().addTo(map);
     new FullscreenCtrl().addTo(map);
+    new FilterCtrl().addTo(map);
+
+    function openFilterPanel() {
+        document.getElementById('filter-panel').classList.add('open');
+        document.getElementById('filter-overlay').classList.add('open');
+    }
+    function closeFilterPanel() {
+        document.getElementById('filter-panel').classList.remove('open');
+        document.getElementById('filter-overlay').classList.remove('open');
+    }
 
     function resetView() { map.flyTo([51.63493144942066, 0.2998021588012623], 13, { duration: 1.5 }); }
     function toggleFullscreen() {
@@ -860,6 +929,9 @@
         if (!geom) return false;
         if (geom.type === 'Point') {
             return haversine(lat, lon, geom.coordinates[1], geom.coordinates[0]) <= radius;
+        }
+        if (geom.type === 'MultiPoint') {
+            return geom.coordinates.some(c => haversine(lat, lon, c[1], c[0]) <= radius);
         }
         const rings = geom.type === 'Polygon'      ? [geom.coordinates[0]]         :
                       geom.type === 'MultiPolygon'  ? geom.coordinates.map(p => p[0]) : [];
