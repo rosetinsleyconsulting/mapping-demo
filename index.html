@@ -324,7 +324,7 @@
     <div id="spatial-banner" style="display:none; margin:0 18px 10px; padding:8px 10px;
          background:rgba(196,163,93,0.15); border:1px solid rgba(196,163,93,0.4);
          border-radius:3px; font-size:9px; font-weight:700; color:#C4A35D;
-         text-transform:uppercase; letter-spacing:0.5px; display:none; align-items:center; gap:6px;">
+         text-transform:uppercase; letter-spacing:0.5px; align-items:center; gap:6px;">
         <span>⬡</span> Spatial filter active
     </div>
 
@@ -440,7 +440,9 @@
     // ══════════════════════════════════════════════════════════════
     //  DRAWING
     // ══════════════════════════════════════════════════════════════
-    const drawnGroup = new L.FeatureGroup([], { pane: 'drawnPane' }).addTo(map);
+    // Explicit SVG renderer for drawn polygons — avoids conflicts with preferCanvas:true
+    const drawnRenderer = L.svg({ pane: 'drawnPane' });
+    const drawnGroup    = new L.FeatureGroup().addTo(map);
     layers.drawn.leaflet = drawnGroup;
 
     let drawHandler          = null;
@@ -469,7 +471,7 @@
                 opacity:     0.9,
                 fillColor:   '#C4A35D',
                 fillOpacity: 0.2,
-                pane:        'drawnPane'
+                renderer:    drawnRenderer   // SVG, not canvas
             },
             showArea: false,
             allowIntersection: false
@@ -619,6 +621,44 @@
         });
     }
 
+    // Geometry-type-aware spatial intersection check.
+    // turf.booleanIntersects silently fails on MultiPolygon in some builds,
+    // so we dispatch by type to the most reliable Turf function for each case.
+    function spatialIntersects(feature, drawnPolygon) {
+        try {
+            const type = feature.geometry && feature.geometry.type;
+            if (!type) return false;
+
+            if (type === 'Point') {
+                return turf.booleanPointInPolygon(feature, drawnPolygon);
+            }
+            if (type === 'MultiPoint') {
+                return feature.geometry.coordinates.some(function(c) {
+                    return turf.booleanPointInPolygon(turf.point(c), drawnPolygon);
+                });
+            }
+            if (type === 'Polygon') {
+                // booleanOverlap = partial overlap; also check containment both ways
+                return turf.booleanOverlap(feature, drawnPolygon) ||
+                       turf.booleanContains(drawnPolygon, feature) ||
+                       turf.booleanContains(feature, drawnPolygon);
+            }
+            if (type === 'MultiPolygon') {
+                // Flatten to individual polygons and test each
+                return feature.geometry.coordinates.some(function(coords) {
+                    const poly = turf.polygon(coords);
+                    return turf.booleanOverlap(poly, drawnPolygon) ||
+                           turf.booleanContains(drawnPolygon, poly) ||
+                           turf.booleanContains(poly, drawnPolygon);
+                });
+            }
+            // LineString / GeometryCollection fallback
+            return turf.booleanIntersects(feature, drawnPolygon);
+        } catch(e) {
+            return false;
+        }
+    }
+
     function passesFilter(key, feature) {
         const p    = feature.properties;
         const zoom = map.getZoom();
@@ -626,8 +666,7 @@
         // Spatial filter — only show features that intersect a drawn polygon
         if (drawnPolygonFeatures.length > 0) {
             const intersects = drawnPolygonFeatures.some(function(drawn) {
-                try { return turf.booleanIntersects(feature, drawn); }
-                catch(e) { return false; }
+                return spatialIntersects(feature, drawn);
             });
             if (!intersects) return false;
         }
