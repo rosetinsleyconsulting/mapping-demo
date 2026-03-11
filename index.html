@@ -188,13 +188,6 @@
 
         /* Footer */
         .sidebar-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
-        .cache-pill {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            margin-bottom: 10px; padding: 6px 8px; border-radius: 3px;
-            font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .cache-pill.caching  { background: rgba(196,163,93,0.1);  border: 1px solid rgba(196,163,93,0.25); color: rgba(196,163,93,0.7); }
-        .cache-pill.ready    { background: rgba(111,132,67,0.15); border: 1px solid rgba(111,132,67,0.35); color: #A8C66C; }
         .sidebar-footer p { font-size: 9px; color: var(--sidebar-dim); line-height: 1.6; text-align: center; }
 
         /* ══ MAP ══════════════════════════════════════════════════ */
@@ -388,7 +381,6 @@
     </div>
 
     <div class="sidebar-footer">
-        <div id="cache-pill" class="cache-pill" style="display:none;"></div>
         <p>© Rose Tinsley Consulting Ltd.<br>Data: Natural England · Historic England · MHCLG · OpenStreetMap</p>
     </div>
 
@@ -923,32 +915,11 @@
         el.style.display = '';
     }
 
-    // ── Service Worker ────────────────────────────────────────────
-    function showCachePill(state) {
-        const pill = document.getElementById('cache-pill');
-        if (state === 'caching') {
-            pill.className = 'cache-pill caching';
-            pill.innerHTML = '⬡ Caching for offline use…';
-            pill.style.display = 'flex';
-        } else if (state === 'ready') {
-            pill.className = 'cache-pill ready';
-            pill.innerHTML = '✓ Ready for offline use';
-            pill.style.display = 'flex';
-            setTimeout(() => { pill.style.display = 'none'; }, 4000);
-        }
-    }
-
+    // Unregister any previously installed service worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
-            if (reg.installing) {
-                showCachePill('caching');
-                reg.installing.addEventListener('statechange', function() {
-                    if (this.state === 'activated') showCachePill('ready');
-                });
-            } else if (reg.active) {
-                showCachePill('ready');
-            }
-        }).catch(err => console.warn('SW registration failed:', err));
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => reg.unregister());
+        });
     }
 
 </script>
