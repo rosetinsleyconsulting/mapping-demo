@@ -277,7 +277,7 @@
     </div>
 
     <div class="sidebar-project">
-        <h1>Planning Constraints – Brentwood</h1>
+        <h1>Planning Constraints</h1>
         <p>Strategic constraint analysis for the Brentwood Borough. Toggle layers and apply filters to explore designations across the study area.</p>
         <div class="tag-pill">Live data</div>
     </div>
@@ -289,14 +289,14 @@
         </div>
         <div class="layer-collapse" id="layers-collapse">
             <div class="layer-item active" onclick="toggleLayer('woodland')">
-                <div class="layer-checkbox checked" id="cb-woodland" style="border-color:#6F8443;background:#6F8443;"></div>
-                <div class="layer-swatch" style="background:#6F8443;"></div>
+                <div class="layer-checkbox checked" id="cb-woodland" style="border-color:#517C78;background:#517C78;"></div>
+                <div class="layer-swatch" style="background:#517C78;"></div>
                 <span class="layer-label">Ancient Woodland</span>
                 <span class="layer-count" id="count-woodland">–</span>
             </div>
             <div class="layer-item active" onclick="toggleLayer('greenbelt')">
-                <div class="layer-checkbox checked" id="cb-greenbelt" style="border-color:#8FAF6A;background:#8FAF6A;"></div>
-                <div class="layer-swatch" style="background:#8FAF6A;"></div>
+                <div class="layer-checkbox checked" id="cb-greenbelt" style="border-color:#6F8443;background:#6F8443;"></div>
+                <div class="layer-swatch" style="background:#6F8443;"></div>
                 <span class="layer-label">Green Belt</span>
                 <span class="layer-count" id="count-greenbelt">–</span>
             </div>
@@ -313,14 +313,14 @@
                 <span class="layer-count" id="count-conservation">–</span>
             </div>
             <div class="layer-item active" onclick="toggleLayer('sssi')">
-                <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#517C78;background:#517C78;"></div>
-                <div class="layer-swatch" style="background:#517C78;"></div>
+                <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#B58B5F;background:#B58B5F;"></div>
+                <div class="layer-swatch" style="background:#B58B5F;"></div>
                 <span class="layer-label">SSSI</span>
                 <span class="layer-count" id="count-sssi">–</span>
             </div>
             <div class="layer-item active" onclick="toggleLayer('listed')">
-                <div class="layer-checkbox checked" id="cb-listed" style="border-color:#5E7A8C;background:#5E7A8C;"></div>
-                <div class="layer-swatch" style="background:#5E7A8C;"></div>
+                <div class="layer-checkbox checked" id="cb-listed" style="border-color:#847C96;background:#847C96;"></div>
+                <div class="layer-swatch" style="background:#847C96;"></div>
                 <span class="layer-label">Listed Buildings</span>
                 <span class="layer-count" id="count-listed">–</span>
             </div>
@@ -342,17 +342,17 @@
 
             <span class="filter-label">Listed Building Grade</span>
             <div class="filter-chips">
-                <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#5E7A8C;background:#5E7A8C;">All</div>
-                <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#5E7A8C;background:#5E7A8C;">Grade I</div>
-                <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#5E7A8C;background:#5E7A8C;">II*</div>
-                <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#5E7A8C;background:#5E7A8C;">Grade II</div>
+                <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#847C96;background:#847C96;">All</div>
+                <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#847C96;background:#847C96;">Grade I</div>
+                <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#847C96;background:#847C96;">II*</div>
+                <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#847C96;background:#847C96;">Grade II</div>
             </div>
 
             <span class="filter-label">Woodland Type</span>
             <div class="filter-chips">
-                <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#6F8443;background:#6F8443;">All</div>
-                <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#6F8443;background:#6F8443;">ASNW</div>
-                <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
+                <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#517C78;background:#517C78;">All</div>
+                <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#517C78;background:#517C78;">ASNW</div>
+                <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#517C78;background:#517C78;">PAWS</div>
             </div>
 
             <span class="filter-label">Flood Zone</span>
@@ -468,12 +468,12 @@
 
     // ── Layer store ───────────────────────────────────────────────
     const layers = {
-        woodland:     { leaflet: null, data: null, visible: true, color: '#6F8443' },
-        greenbelt:    { leaflet: null, data: null, visible: true, color: '#8FAF6A' },
+        woodland:     { leaflet: null, data: null, visible: true, color: '#517C78' },
+        greenbelt:    { leaflet: null, data: null, visible: true, color: '#6F8443' },
         flood:        { leaflet: null, data: null, visible: true, color: '#3A6FA0' },
         conservation: { leaflet: null, data: null, visible: true, color: '#A67C7C' },
-        sssi:         { leaflet: null, data: null, visible: true, color: '#517C78' },
-        listed:       { leaflet: null, data: null, visible: true, color: '#5E7A8C', zoomBand: null },
+        sssi:         { leaflet: null, data: null, visible: true, color: '#B58B5F' },
+        listed:       { leaflet: null, data: null, visible: true, color: '#847C96', zoomBand: null },
         roads:        { leaflet: null, data: null, visible: true, color: '#93A392', zoomBand: null, filename: 'brentwood_roads.geojson', fetching: false }
     };
 
@@ -607,11 +607,11 @@
     function buildWoodlandLayer(data) {
         return L.geoJSON(data, {
             pane: 'polygonPane',
-            style: { fillColor: '#6F8443', fillOpacity: 0.35, color: '#6F8443', weight: 1.5, opacity: 0.8 },
+            style: { fillColor: '#517C78', fillOpacity: 0.35, color: '#517C78', weight: 1.5, opacity: 0.8 },
             onEachFeature: function(feature, layer) {
                 const p    = feature.properties;
                 const name = (p.NAME && p.NAME.trim()) ? p.NAME.trim() : (p.THEMNAME || 'Ancient Woodland');
-                let c = badge('#6F8443', 'Ancient Woodland') + '<h4>' + name + '</h4>';
+                let c = badge('#517C78', 'Ancient Woodland') + '<h4>' + name + '</h4>';
                 if (p.THEMNAME) c += '<p><span class="label">Type:</span> '   + p.THEMNAME + '</p>';
                 if (p.STATUS)   c += '<p><span class="label">Status:</span> ' + p.STATUS   + '</p>';
                 if (p.AREA)     c += '<p><span class="label">Area:</span> '   + p.AREA.toFixed(2) + ' ha</p>';
@@ -623,10 +623,10 @@
     function buildGreenbeltLayer(data) {
         return L.geoJSON(data, {
             pane: 'polygonPane',
-            style: { fillColor: '#8FAF6A', fillOpacity: 0.2, color: '#8FAF6A', weight: 2, opacity: 0.8, dashArray: '5 4' },
+            style: { fillColor: '#6F8443', fillOpacity: 0.2, color: '#6F8443', weight: 2, opacity: 0.8, dashArray: '5 4' },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
-                let c = badge('#8FAF6A', 'Green Belt') + '<h4>' + (p.gb_name || 'Green Belt') + ' Green Belt</h4>';
+                let c = badge('#6F8443', 'Green Belt') + '<h4>' + (p.gb_name || 'Green Belt') + ' Green Belt</h4>';
                 if (p.lad_nm)  c += '<p><span class="label">District:</span> ' + p.lad_nm + '</p>';
                 if (p.area_ha) c += '<p><span class="label">Area:</span> '     + p.area_ha.toFixed(0) + ' ha</p>';
                 layer.bindPopup(popup(c));
@@ -637,7 +637,7 @@
     function buildFloodLayer(data) {
         return L.geoJSON(data, {
             pane: 'polygonPane',
-            renderer: L.canvas(),
+            renderer: L.canvas({ pane: 'polygonPane' }),
             style: function(f) {
                 const fz = f.properties.flood_zone;
                 return {
@@ -683,12 +683,12 @@
             pointToLayer: function(feature, latlng) {
                 return L.circleMarker(latlng, {
                     pane: 'pointPane', radius: 6,
-                    fillColor: '#5E7A8C', color: '#FEFFF8', weight: 2, opacity: 1, fillOpacity: 0.85
+                    fillColor: '#847C96', color: '#FEFFF8', weight: 2, opacity: 1, fillOpacity: 0.85
                 });
             },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
-                let c = badge('#5E7A8C', 'Listed Building') + '<h4>' + (p.Name || 'Listed Building') + '</h4>';
+                let c = badge('#847C96', 'Listed Building') + '<h4>' + (p.Name || 'Listed Building') + '</h4>';
                 if (p.Grade)     c += '<p><span class="label">Grade:</span> '    + p.Grade + '</p>';
                 if (p.NGR)       c += '<p><span class="label">Grid Ref:</span> ' + p.NGR   + '</p>';
                 if (p.ListDate)  c += '<p><span class="label">Listed:</span> '   + new Date(p.ListDate).toLocaleDateString('en-GB') + '</p>';
@@ -703,10 +703,10 @@
     function buildSSSILayer(data) {
         return L.geoJSON(data, {
             pane: 'polygonPane',
-            style: { fillColor: '#517C78', fillOpacity: 0.35, color: '#517C78', weight: 2, opacity: 0.85 },
+            style: { fillColor: '#B58B5F', fillOpacity: 0.35, color: '#B58B5F', weight: 2, opacity: 0.85 },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
-                let c = badge('#517C78', 'SSSI') + '<h4>' + (p.name || 'SSSI') + '</h4>';
+                let c = badge('#B58B5F', 'SSSI') + '<h4>' + (p.name || 'SSSI') + '</h4>';
                 c += '<p><span class="label">Type:</span> Site of Special Scientific Interest</p>';
                 if (p.measure)    c += '<p><span class="label">Area:</span> '      + p.measure    + ' ha</p>';
                 if (p.ref_code)   c += '<p><span class="label">Reference:</span> ' + p.ref_code   + '</p>';
@@ -814,12 +814,12 @@
     let analysisRadius = 500;
 
     const ANALYSIS_LAYERS = [
-        { key: 'woodland',     label: 'Ancient Woodland',  color: '#6F8443' },
-        { key: 'greenbelt',    label: 'Green Belt',        color: '#8FAF6A' },
-        { key: 'flood',        label: 'Flood Zones',        color: '#3A6FA0' },
+        { key: 'woodland',     label: 'Ancient Woodland',  color: '#517C78' },
+        { key: 'greenbelt',    label: 'Green Belt',        color: '#6F8443' },
+        { key: 'flood',        label: 'Flood Zones',       color: '#3A6FA0' },
         { key: 'conservation', label: 'Conservation Areas',color: '#A67C7C' },
-        { key: 'sssi',         label: 'SSSI',              color: '#517C78' },
-        { key: 'listed',       label: 'Listed Buildings',  color: '#5E7A8C' },
+        { key: 'sssi',         label: 'SSSI',              color: '#B58B5F' },
+        { key: 'listed',       label: 'Listed Buildings',  color: '#847C96' },
     ];
 
     function setRadius(r) {
