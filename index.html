@@ -121,6 +121,16 @@
         }
         .chip.active { color: var(--brand-cream); }
         .chip.inactive { background: transparent !important; color: var(--sidebar-dim) !important; border-color: rgba(254,255,248,0.15) !important; }
+
+        /* Radius chips */
+        .r-chip {
+            padding: 3px 9px; border-radius: 20px; font-size: 9px; font-weight: 700;
+            cursor: pointer; border: 1.5px solid rgba(196,163,93,0.35); transition: all 0.15s;
+            user-select: none; text-transform: uppercase; letter-spacing: 0.3px;
+            background: transparent; color: var(--sidebar-dim);
+        }
+        .r-chip.active { background: #C4A35D; border-color: #C4A35D; color: var(--brand-cream); }
+
         .filter-select, .filter-input {
             width: 100%; padding: 7px 10px; border: 1px solid rgba(254,255,248,0.15); border-radius: 3px;
             font-family: 'Montserrat', sans-serif; font-size: 11px;
@@ -138,6 +148,44 @@
         }
         .filter-reset:hover { background: rgba(254,255,248,0.1); }
 
+        /* Tool buttons */
+        .tool-btn {
+            flex: 1; padding: 9px 8px;
+            background: rgba(254,255,248,0.08); border: 1px solid rgba(254,255,248,0.2); border-radius: 3px;
+            font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+            color: var(--sidebar-text); cursor: pointer; transition: all 0.15s;
+            text-transform: uppercase; letter-spacing: 0.4px; text-align: center;
+        }
+        .tool-btn:hover { background: rgba(254,255,248,0.14); }
+        .tool-btn.active { background: #C4A35D; border-color: #C4A35D; color: var(--brand-cream); }
+        .tool-btn.danger { background: rgba(166,124,124,0.15); border-color: rgba(166,124,124,0.3); color: #C4A0A0; }
+        .tool-btn.danger:hover { background: rgba(166,124,124,0.28); }
+        .tool-hint { font-size: 9px; color: var(--sidebar-dim); line-height: 1.5; margin-top: 8px; }
+
+        /* Analysis results panel */
+        .analysis-panel {
+            margin-top: 10px;
+            background: rgba(45,45,42,0.4);
+            border: 1px solid rgba(254,255,248,0.12);
+            border-radius: 4px; overflow: hidden;
+        }
+        .analysis-header {
+            padding: 7px 12px; font-size: 9px; font-weight: 700;
+            color: var(--sidebar-dim); text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(254,255,248,0.08);
+        }
+        .analysis-row {
+            display: flex; align-items: center; padding: 6px 12px; gap: 8px;
+            border-bottom: 1px solid rgba(254,255,248,0.06);
+        }
+        .analysis-row:last-child { border-bottom: none; }
+        .analysis-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+        .analysis-name { font-size: 10px; color: var(--sidebar-text); flex: 1; }
+        .analysis-count { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .analysis-count.hit  { color: #A8C66C; }
+        .analysis-count.none { color: var(--sidebar-dim); font-weight: 400; }
+        .analysis-count.wait { color: var(--sidebar-dim); font-style: italic; font-size: 9px; font-weight: 400; }
+
         /* Footer */
         .sidebar-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
         .cache-pill {
@@ -152,7 +200,7 @@
         /* ══ MAP ══════════════════════════════════════════════════ */
         #map { flex: 1; height: 100vh; }
 
-        /* Leaflet overrides — colours only, no layout properties */
+        /* Leaflet overrides */
         .leaflet-popup-content-wrapper {
             background: var(--brand-cream) !important;
             border: 1px solid var(--border) !important;
@@ -173,6 +221,17 @@
             background: rgba(254,255,248,0.85) !important;
         }
 
+        /* Map control buttons (fullscreen / reset view) */
+        .map-ctrl-btn {
+            width: 30px; height: 30px;
+            background: var(--brand-cream); border: 1px solid var(--border);
+            border-radius: 3px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 15px; color: var(--brand-dark);
+            box-shadow: 0 1px 5px rgba(0,0,0,0.15); transition: background 0.15s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .map-ctrl-btn:hover { background: var(--brand-muted); }
+
         /* Popup content */
         .info-box { font-family: 'Montserrat', sans-serif; }
         .info-box h4 { font-family: 'Yeseva One', serif; font-size: 14px; font-weight: 400; color: var(--brand-dark); margin-bottom: 6px; }
@@ -180,6 +239,14 @@
         .info-box .label { font-weight: 700; color: var(--text-primary); }
         .info-box a { color: var(--accent); font-size: 11px; text-decoration: none; font-weight: 600; }
         .info-box a:hover { text-decoration: underline; }
+
+        /* Conference pin */
+        .conf-pin {
+            width: 24px; height: 24px; background: var(--brand-dark);
+            border: 3px solid var(--brand-cream); border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg); box-shadow: 0 2px 8px rgba(45,45,42,0.4);
+        }
+
         .type-badge {
             display: inline-block; padding: 2px 8px; border-radius: 3px;
             font-size: 9px; font-weight: 700; color: var(--brand-cream);
@@ -200,8 +267,8 @@
     </div>
 
     <div class="sidebar-project">
-        <h1>Environmental Planning Constraints</h1>
-        <p>Strategic constraint analysis for Essex. Toggle layers and apply filters to explore designations across the study area.</p>
+        <h1>Planning Constraints – Brentwood</h1>
+        <p>Strategic constraint analysis for the Brentwood Borough. Toggle layers and apply filters to explore designations across the study area.</p>
         <div class="tag-pill">Live data</div>
     </div>
 
@@ -215,17 +282,23 @@
             <span class="layer-label">Ancient Woodland</span>
             <span class="layer-count" id="count-woodland">–</span>
         </div>
+        <div class="layer-item active" onclick="toggleLayer('greenbelt')">
+            <div class="layer-checkbox checked" id="cb-greenbelt" style="border-color:#8FAF6A;background:#8FAF6A;"></div>
+            <div class="layer-swatch" style="background:#8FAF6A;"></div>
+            <span class="layer-label">Green Belt</span>
+            <span class="layer-count" id="count-greenbelt">–</span>
+        </div>
+        <div class="layer-item active" onclick="toggleLayer('flood')">
+            <div class="layer-checkbox checked" id="cb-flood" style="border-color:#3A6FA0;background:#3A6FA0;"></div>
+            <div class="layer-swatch" style="background:linear-gradient(135deg,#3A6FA0 50%,#6FABD4 50%);"></div>
+            <span class="layer-label">Flood Zones</span>
+            <span class="layer-count" id="count-flood">–</span>
+        </div>
         <div class="layer-item active" onclick="toggleLayer('conservation')">
             <div class="layer-checkbox checked" id="cb-conservation" style="border-color:#A67C7C;background:#A67C7C;"></div>
             <div class="layer-swatch" style="background:#A67C7C;"></div>
             <span class="layer-label">Conservation Areas</span>
             <span class="layer-count" id="count-conservation">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('listed')">
-            <div class="layer-checkbox checked" id="cb-listed" style="border-color:#5E7A8C;background:#5E7A8C;"></div>
-            <div class="layer-swatch" style="background:#5E7A8C;"></div>
-            <span class="layer-label">Listed Buildings</span>
-            <span class="layer-count" id="count-listed">–</span>
         </div>
         <div class="layer-item active" onclick="toggleLayer('sssi')">
             <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#517C78;background:#517C78;"></div>
@@ -233,11 +306,11 @@
             <span class="layer-label">SSSI</span>
             <span class="layer-count" id="count-sssi">–</span>
         </div>
-        <div class="layer-item active" onclick="toggleLayer('boundaries')">
-            <div class="layer-checkbox checked" id="cb-boundaries" style="border-color:#DBDFD1;background:#DBDFD1;"></div>
-            <div class="layer-swatch" style="background:#DBDFD1;"></div>
-            <span class="layer-label">Essex Districts</span>
-            <span class="layer-count" id="count-boundaries">–</span>
+        <div class="layer-item active" onclick="toggleLayer('listed')">
+            <div class="layer-checkbox checked" id="cb-listed" style="border-color:#5E7A8C;background:#5E7A8C;"></div>
+            <div class="layer-swatch" style="background:#5E7A8C;"></div>
+            <span class="layer-label">Listed Buildings</span>
+            <span class="layer-count" id="count-listed">–</span>
         </div>
         <div class="layer-item active" onclick="toggleLayer('roads')">
             <div class="layer-checkbox checked" id="cb-roads" style="border-color:#93A392;background:#93A392;"></div>
@@ -269,6 +342,13 @@
                 <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
             </div>
 
+            <span class="filter-label">Flood Zone</span>
+            <div class="filter-chips">
+                <div class="chip active" data-filter="floodzone" data-value="all" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">All</div>
+                <div class="chip active" data-filter="floodzone" data-value="FZ3" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">Zone 3</div>
+                <div class="chip active" data-filter="floodzone" data-value="FZ2" data-color="#6FABD4" style="border-color:#6FABD4;background:#6FABD4;">Zone 2</div>
+            </div>
+
             <span class="filter-label">Conservation Designated After</span>
             <select class="filter-select" id="filter-ca-date" onchange="applyFilters()">
                 <option value="all">All dates</option>
@@ -286,9 +366,30 @@
         </div>
     </div>
 
+    <div class="sidebar-divider"></div>
+
+    <!-- Site Analysis -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-label">Site Analysis</div>
+        <div class="filter-block" style="padding-top:4px;">
+            <span class="filter-label">Search Radius</span>
+            <div class="filter-chips">
+                <div class="r-chip" id="rc-250" onclick="setRadius(250)">250m</div>
+                <div class="r-chip active" id="rc-500" onclick="setRadius(500)">500m</div>
+                <div class="r-chip" id="rc-1000" onclick="setRadius(1000)">1km</div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px;">
+                <button class="tool-btn" id="btn-drop-pin" onclick="toggleDropPin()">+ Drop Pin</button>
+                <button class="tool-btn danger" id="btn-reset-pin" style="display:none;" onclick="resetPin()">✕ Clear</button>
+            </div>
+            <p class="tool-hint" id="pin-hint">Drop a pin on any location to see nearby planning constraints.</p>
+            <div id="analysis-results" style="display:none;"></div>
+        </div>
+    </div>
+
     <div class="sidebar-footer">
         <div id="cache-pill" class="cache-pill" style="display:none;"></div>
-        <p>© Rose Tinsley Consulting Ltd.<br>Data: Natural England · Historic England · OpenStreetMap</p>
+        <p>© Rose Tinsley Consulting Ltd.<br>Data: Natural England · Historic England · MHCLG · OpenStreetMap</p>
     </div>
 
 </div>
@@ -300,7 +401,7 @@
 <script>
 
     // ── Map ───────────────────────────────────────────────────────
-    const map = L.map('map', { center: [51.625, 0.290], zoom: 13, minZoom: 8, maxZoom: 18 });
+    const map = L.map('map', { center: [51.63493, 0.29980], zoom: 13, minZoom: 8, maxZoom: 18 });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20
@@ -311,17 +412,54 @@
     map.createPane('polygonPane').style.zIndex = 360;
     map.createPane('pointPane').style.zIndex   = 370;
 
+    // ── Conference pin ────────────────────────────────────────────
+    const confIcon = L.divIcon({ className: '', html: '<div class="conf-pin"></div>', iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -26] });
+    L.marker([51.63493144942066, 0.2998021588012623], { icon: confIcon, pane: 'pointPane' })
+        .bindPopup(popup(badge('#2D2D2A', 'Conference') + '<h4>Brentwood Centre</h4><p>RTC Conference Venue</p>'))
+        .addTo(map);
+
+    // ── Map controls: Reset View & Fullscreen ─────────────────────
+    const ResetViewCtrl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function() {
+            const btn = L.DomUtil.create('button', 'map-ctrl-btn');
+            btn.innerHTML = '⌂'; btn.title = 'Reset view';
+            L.DomEvent.on(btn, 'click', resetView);
+            L.DomEvent.disableClickPropagation(btn);
+            return btn;
+        }
+    });
+    const FullscreenCtrl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function() {
+            const btn = L.DomUtil.create('button', 'map-ctrl-btn');
+            btn.innerHTML = '⛶'; btn.title = 'Toggle fullscreen';
+            L.DomEvent.on(btn, 'click', toggleFullscreen);
+            L.DomEvent.disableClickPropagation(btn);
+            return btn;
+        }
+    });
+    new ResetViewCtrl().addTo(map);
+    new FullscreenCtrl().addTo(map);
+
+    function resetView() { map.flyTo([51.63493144942066, 0.2998021588012623], 13, { duration: 1.5 }); }
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+    }
+
     // ── Layer store ───────────────────────────────────────────────
     const layers = {
         woodland:     { leaflet: null, data: null, visible: true, color: '#6F8443' },
+        greenbelt:    { leaflet: null, data: null, visible: true, color: '#8FAF6A' },
+        flood:        { leaflet: null, data: null, visible: true, color: '#3A6FA0' },
         conservation: { leaflet: null, data: null, visible: true, color: '#A67C7C' },
-        listed:       { leaflet: null, data: null, visible: true, color: '#5E7A8C', zoomBand: null },
         sssi:         { leaflet: null, data: null, visible: true, color: '#517C78' },
-        boundaries:   { leaflet: null, data: null, visible: true, color: '#DBDFD1' },
-        roads:        { leaflet: null, data: null, visible: true, color: '#93A392', zoomBand: null, filename: 'osm_roads.geojson', fetching: false }
+        listed:       { leaflet: null, data: null, visible: true, color: '#5E7A8C', zoomBand: null },
+        roads:        { leaflet: null, data: null, visible: true, color: '#93A392', zoomBand: null, filename: 'brentwood_roads.geojson', fetching: false }
     };
 
-    const filters = { grade: 'all', woodland: 'all', caDate: 'all', search: '' };
+    const filters = { grade: 'all', woodland: 'all', floodzone: 'all', caDate: 'all', search: '' };
 
     // ── Layer toggle ──────────────────────────────────────────────
     function toggleLayer(key) {
@@ -356,12 +494,13 @@
         chip.addEventListener('click', function() {
             const filterKey = this.dataset.filter;
             const value     = this.dataset.value;
-            const color     = filterKey === 'grade' ? '#5E7A8C' : '#6F8443';
 
             document.querySelectorAll('[data-filter="' + filterKey + '"]').forEach(c => {
                 c.classList.remove('active'); c.classList.add('inactive');
             });
             this.classList.add('active'); this.classList.remove('inactive');
+            // Use per-chip colour if set, otherwise fall back to filter-group colour
+            const color = this.dataset.color || (filterKey === 'grade' ? '#5E7A8C' : '#6F8443');
             this.style.background = color; this.style.borderColor = color; this.style.color = '#FEFFF8';
 
             filters[filterKey] = value;
@@ -393,7 +532,7 @@
 
         if (filters.search) {
             const name = (p.NAME || p.name || p.Name || '').toLowerCase();
-            if (!name.includes(filters.search)) return false;
+            if (name && !name.includes(filters.search)) return false;
         }
         if (key === 'listed' && zoom < 13) return false;
         if (key === 'roads') {
@@ -408,8 +547,9 @@
                                               || fclass === 'living_street')  minZoom = 14;
             if (zoom < minZoom) return false;
         }
-        if (key === 'listed'       && filters.grade   !== 'all' && p.Grade  !== filters.grade)    return false;
-        if (key === 'woodland'     && filters.woodland !== 'all' && p.STATUS !== filters.woodland) return false;
+        if (key === 'listed'    && filters.grade     !== 'all' && p.Grade      !== filters.grade)     return false;
+        if (key === 'woodland'  && filters.woodland  !== 'all' && p.STATUS     !== filters.woodland)  return false;
+        if (key === 'flood'     && filters.floodzone !== 'all' && p.flood_zone !== filters.floodzone) return false;
         if (key === 'conservation' && filters.caDate  !== 'all') {
             const year = p.designatio ? parseInt(p.designatio.substring(0, 4)) : 0;
             if (year < parseInt(filters.caDate)) return false;
@@ -418,11 +558,12 @@
     }
 
     function resetFilters() {
-        filters.grade = 'all'; filters.woodland = 'all'; filters.caDate = 'all'; filters.search = '';
+        filters.grade = 'all'; filters.woodland = 'all'; filters.floodzone = 'all'; filters.caDate = 'all'; filters.search = '';
         document.getElementById('filter-ca-date').value = 'all';
         document.getElementById('filter-search').value  = '';
         document.querySelectorAll('.chip').forEach(chip => {
-            const color = chip.dataset.filter === 'grade' ? '#5E7A8C' : '#6F8443';
+            // Restore each chip to its own colour (or group fallback)
+            const color = chip.dataset.color || (chip.dataset.filter === 'grade' ? '#5E7A8C' : '#6F8443');
             chip.classList.add('active'); chip.classList.remove('inactive');
             chip.style.background = color; chip.style.borderColor = color; chip.style.color = '#FEFFF8';
         });
@@ -433,10 +574,11 @@
     function buildLayer(key, data) {
         switch(key) {
             case 'woodland':     return buildWoodlandLayer(data);
+            case 'greenbelt':    return buildGreenbeltLayer(data);
+            case 'flood':        return buildFloodLayer(data);
             case 'conservation': return buildConservationLayer(data);
-            case 'listed':       return buildListedLayer(data);
             case 'sssi':         return buildSSSILayer(data);
-            case 'boundaries':   return buildBoundariesLayer(data);
+            case 'listed':       return buildListedLayer(data);
             case 'roads':        return buildRoadsLayer(data);
         }
     }
@@ -455,6 +597,45 @@
                 if (p.THEMNAME) c += '<p><span class="label">Type:</span> '   + p.THEMNAME + '</p>';
                 if (p.STATUS)   c += '<p><span class="label">Status:</span> ' + p.STATUS   + '</p>';
                 if (p.AREA)     c += '<p><span class="label">Area:</span> '   + p.AREA.toFixed(2) + ' ha</p>';
+                layer.bindPopup(popup(c));
+            }
+        });
+    }
+
+    function buildGreenbeltLayer(data) {
+        return L.geoJSON(data, {
+            pane: 'polygonPane',
+            style: { fillColor: '#8FAF6A', fillOpacity: 0.2, color: '#8FAF6A', weight: 2, opacity: 0.8, dashArray: '5 4' },
+            onEachFeature: function(feature, layer) {
+                const p = feature.properties;
+                let c = badge('#8FAF6A', 'Green Belt') + '<h4>' + (p.gb_name || 'Green Belt') + ' Green Belt</h4>';
+                if (p.lad_nm)  c += '<p><span class="label">District:</span> ' + p.lad_nm + '</p>';
+                if (p.area_ha) c += '<p><span class="label">Area:</span> '     + p.area_ha.toFixed(0) + ' ha</p>';
+                layer.bindPopup(popup(c));
+            }
+        });
+    }
+
+    function buildFloodLayer(data) {
+        return L.geoJSON(data, {
+            pane: 'polygonPane',
+            style: function(f) {
+                const fz = f.properties.flood_zone;
+                return {
+                    fillColor:   fz === 'FZ3' ? '#3A6FA0' : '#6FABD4',
+                    fillOpacity: fz === 'FZ3' ? 0.45 : 0.28,
+                    color:       fz === 'FZ3' ? '#3A6FA0' : '#6FABD4',
+                    weight: 1, opacity: 0.75
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                const p     = feature.properties;
+                const isFZ3 = p.flood_zone === 'FZ3';
+                const color = isFZ3 ? '#3A6FA0' : '#6FABD4';
+                const label = isFZ3 ? 'Zone 3 – High Risk' : 'Zone 2 – Medium Risk';
+                let c = badge(color, 'Flood Zone') + '<h4>' + p.flood_zone + ' – ' + label + '</h4>';
+                if (p.flood_source) c += '<p><span class="label">Source:</span> ' + p.flood_source + '</p>';
+                if (p.origin)       c += '<p><span class="label">Origin:</span> ' + p.origin       + '</p>';
                 layer.bindPopup(popup(c));
             }
         });
@@ -512,19 +693,6 @@
                 if (p.ref_code)   c += '<p><span class="label">Reference:</span> ' + p.ref_code   + '</p>';
                 if (p.contact_no) c += '<p><span class="label">Contact:</span> '   + p.contact_no + '</p>';
                 if (p.hyperlink)  c += '<p><a href="https://designatedsites.naturalengland.org.uk/SiteDetail.aspx?SiteCode=S' + p.hyperlink + '" target="_blank">View on Natural England ↗</a></p>';
-                layer.bindPopup(popup(c));
-            }
-        });
-    }
-
-    function buildBoundariesLayer(data) {
-        return L.geoJSON(data, {
-            pane: 'polygonPane',
-            style: { fillColor: '#DBDFD1', fillOpacity: 0.04, color: '#DBDFD1', weight: 2, opacity: 0.7, dashArray: '6 4' },
-            onEachFeature: function(feature, layer) {
-                const p = feature.properties;
-                let c = badge('#454E3A', 'Essex District') + '<h4>' + (p.LAD25NM || 'District') + '</h4>';
-                if (p.LAD25CD) c += '<p><span class="label">Code:</span> ' + p.LAD25CD + '</p>';
                 layer.bindPopup(popup(c));
             }
         });
@@ -592,7 +760,7 @@
 
     // ── Load data ─────────────────────────────────────────────────
     let layersLoaded = 0;
-    const totalLayers = 5;
+    const totalLayers = 6;
 
     function loadLayer(key, filename) {
         if (layers[key].fetching || layers[key].data) return;
@@ -608,16 +776,152 @@
                 if (layers[key].visible) layers[key].leaflet.addTo(map);
                 document.getElementById('count-' + key).textContent = init.features.length;
                 layersLoaded++;
-                if (layersLoaded === totalLayers) loadLayer('roads', 'osm_roads.geojson');
+                if (layersLoaded === totalLayers) loadLayer('roads', 'brentwood_roads.geojson');
             })
             .catch(err => console.warn('Failed to load ' + filename, err));
     }
 
     loadLayer('woodland',     'ancient_woodland_esx.geojson');
-    loadLayer('conservation', 'conservation_areas_esx.geojson');
-    loadLayer('listed',       'listed_buildings_esx.geojson');
-    loadLayer('sssi',         'sssi_esx.geojson');
-    loadLayer('boundaries',   'essex_boundaries.geojson');
+    loadLayer('greenbelt',    'brentwood_greenbelt.geojson');
+    loadLayer('flood',        'brentwood_flood_zone.geojson');
+    loadLayer('conservation', 'brentwood_conservation_areas.geojson');
+    loadLayer('sssi',         'brentwood_sssi.geojson');
+    loadLayer('listed',       'brentwood_lb.geojson');
+
+    // ── Site Analysis ─────────────────────────────────────────────
+    let dropPinMode    = false;
+    let analysisMark   = null;
+    let analysisCircle = null;
+    let analysisRadius = 500;
+
+    const ANALYSIS_LAYERS = [
+        { key: 'woodland',     label: 'Ancient Woodland',  color: '#6F8443' },
+        { key: 'greenbelt',    label: 'Green Belt',        color: '#8FAF6A' },
+        { key: 'flood',        label: 'Flood Zones',        color: '#3A6FA0' },
+        { key: 'conservation', label: 'Conservation Areas',color: '#A67C7C' },
+        { key: 'sssi',         label: 'SSSI',              color: '#517C78' },
+        { key: 'listed',       label: 'Listed Buildings',  color: '#5E7A8C' },
+    ];
+
+    function setRadius(r) {
+        analysisRadius = r;
+        [250, 500, 1000].forEach(v => {
+            const el = document.getElementById('rc-' + v);
+            if (v === r) el.classList.add('active'); else el.classList.remove('active');
+        });
+        if (analysisMark) runProximitySearch(analysisMark.getLatLng());
+    }
+
+    function toggleDropPin() {
+        dropPinMode = !dropPinMode;
+        const btn = document.getElementById('btn-drop-pin');
+        if (dropPinMode) {
+            btn.classList.add('active');
+            btn.textContent = '↩ Cancel';
+            map.getContainer().style.cursor = 'crosshair';
+        } else {
+            btn.classList.remove('active');
+            btn.textContent = '+ Drop Pin';
+            map.getContainer().style.cursor = '';
+        }
+    }
+
+    function resetPin() {
+        if (analysisMark)   { map.removeLayer(analysisMark);   analysisMark   = null; }
+        if (analysisCircle) { map.removeLayer(analysisCircle); analysisCircle = null; }
+        document.getElementById('analysis-results').style.display = 'none';
+        document.getElementById('btn-reset-pin').style.display    = 'none';
+        document.getElementById('pin-hint').style.display         = '';
+    }
+
+    map.on('click', function(e) {
+        if (!dropPinMode) return;
+        dropPinMode = false;
+        const btn = document.getElementById('btn-drop-pin');
+        btn.classList.remove('active');
+        btn.textContent = '+ Drop Pin';
+        map.getContainer().style.cursor = '';
+        runProximitySearch(e.latlng);
+    });
+
+    function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371000;
+        const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function pointInRing(lat, lon, ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+            if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi))
+                inside = !inside;
+        }
+        return inside;
+    }
+
+    function featureHitsRadius(feature, lat, lon, radius) {
+        const geom = feature.geometry;
+        if (!geom) return false;
+        if (geom.type === 'Point') {
+            return haversine(lat, lon, geom.coordinates[1], geom.coordinates[0]) <= radius;
+        }
+        const rings = geom.type === 'Polygon'      ? [geom.coordinates[0]]         :
+                      geom.type === 'MultiPolygon'  ? geom.coordinates.map(p => p[0]) : [];
+        for (const ring of rings) {
+            if (pointInRing(lat, lon, ring)) return true;
+            for (const coord of ring) {
+                if (haversine(lat, lon, coord[1], coord[0]) <= radius) return true;
+            }
+        }
+        return false;
+    }
+
+    function runProximitySearch(latlng) {
+        if (analysisMark)   map.removeLayer(analysisMark);
+        if (analysisCircle) map.removeLayer(analysisCircle);
+
+        const pinIcon = L.divIcon({
+            className: '',
+            html: '<div style="width:14px;height:14px;background:#C4A35D;border:3px solid #FEFFF8;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
+            iconSize: [14, 14], iconAnchor: [7, 7]
+        });
+        analysisMark   = L.marker(latlng, { icon: pinIcon, pane: 'pointPane' }).addTo(map);
+        analysisCircle = L.circle(latlng, {
+            radius: analysisRadius, pane: 'polygonPane',
+            color: '#C4A35D', weight: 2, opacity: 0.9,
+            fillColor: '#C4A35D', fillOpacity: 0.07, dashArray: '6 4'
+        }).addTo(map);
+
+        document.getElementById('btn-reset-pin').style.display = '';
+        document.getElementById('pin-hint').style.display      = 'none';
+
+        const { lat, lng } = latlng;
+        const radiusLabel  = analysisRadius >= 1000 ? (analysisRadius / 1000) + 'km' : analysisRadius + 'm';
+
+        let html = '<div class="analysis-panel"><div class="analysis-header">Within ' + radiusLabel + ' of pin</div>';
+
+        ANALYSIS_LAYERS.forEach(({ key, label, color }) => {
+            const entry = layers[key];
+            let countHtml;
+            if (!entry || !entry.data) {
+                countHtml = '<span class="analysis-count wait">loading…</span>';
+            } else {
+                const count = entry.data.features.filter(f => featureHitsRadius(f, lat, lng, analysisRadius)).length;
+                countHtml = '<span class="analysis-count ' + (count > 0 ? 'hit' : 'none') + '">' + count + '</span>';
+            }
+            html += '<div class="analysis-row"><div class="analysis-dot" style="background:' + color + ';"></div>'
+                  + '<span class="analysis-name">' + label + '</span>' + countHtml + '</div>';
+        });
+
+        html += '</div>';
+        const el = document.getElementById('analysis-results');
+        el.innerHTML = html;
+        el.style.display = '';
+    }
 
     // ── Service Worker ────────────────────────────────────────────
     function showCachePill(state) {
@@ -637,13 +941,11 @@
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').then(reg => {
             if (reg.installing) {
-                // First-ever install
                 showCachePill('caching');
                 reg.installing.addEventListener('statechange', function() {
                     if (this.state === 'activated') showCachePill('ready');
                 });
             } else if (reg.active) {
-                // Already installed from a previous visit — show ready briefly
                 showCachePill('ready');
             }
         }).catch(err => console.warn('SW registration failed:', err));
