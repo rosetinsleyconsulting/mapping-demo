@@ -51,7 +51,7 @@
         .sidebar::-webkit-scrollbar-thumb { background: rgba(254,255,248,0.15); border-radius: 2px; }
 
         /* Logo */
-        .sidebar-logo { padding: 20px 18px 18px; border-bottom: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
+        .sidebar-logo { padding: clamp(10px,1.8vh,20px) 16px clamp(8px,1.4vh,18px); border-bottom: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
         .logo-row { display: flex; align-items: center; gap: 10px; }
         .logo-mark {
             width: 30px; height: 30px; background: var(--accent); border-radius: 4px;
@@ -66,14 +66,14 @@
         }
 
         /* Project block */
-        .sidebar-project { padding: 16px 18px; border-bottom: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
+        .sidebar-project { padding: clamp(8px,1.3vh,16px) 16px; border-bottom: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
         .sidebar-project h1 {
-            font-family: 'Yeseva One', serif; font-size: 16px; font-weight: 400;
-            color: var(--brand-cream); line-height: 1.25; margin-bottom: 5px;
+            font-family: 'Yeseva One', serif; font-size: clamp(13px,1.8vh,16px); font-weight: 400;
+            color: var(--brand-cream); line-height: 1.25; margin-bottom: clamp(3px,0.5vh,5px);
         }
-        .sidebar-project p { font-size: 10px; color: var(--sidebar-text); line-height: 1.5; }
+        .sidebar-project p { font-size: 10px; color: var(--sidebar-text); line-height: 1.4; }
         .tag-pill {
-            display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; padding: 3px 9px;
+            display: inline-flex; align-items: center; gap: 5px; margin-top: clamp(5px,0.8vh,10px); padding: 2px 8px;
             background: rgba(111,132,67,0.2); border: 1px solid rgba(111,132,67,0.4);
             border-radius: 20px; font-size: 9px; font-weight: 700;
             color: #A8C66C; text-transform: uppercase; letter-spacing: 0.5px;
@@ -81,17 +81,34 @@
         .tag-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #A8C66C; flex-shrink: 0; }
 
         /* Sections */
-        .sidebar-section { padding: 14px 0 6px; flex-shrink: 0; }
+        .sidebar-section { padding: clamp(6px,1.1vh,14px) 0 clamp(2px,0.5vh,6px); flex-shrink: 0; }
         .sidebar-section-label {
-            padding: 0 18px 8px;
+            padding: 0 16px clamp(4px,0.7vh,8px);
             font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
             color: var(--sidebar-dim); font-weight: 700;
         }
-        .sidebar-divider { height: 1px; background: rgba(254,255,248,0.1); margin: 4px 18px; }
+        .sidebar-divider { height: 1px; background: rgba(254,255,248,0.1); margin: 2px 16px; }
+
+        /* Collapsible section label */
+        .sidebar-section-label {
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; user-select: none;
+        }
+        .sidebar-section-label .chevron {
+            font-size: 8px; color: var(--sidebar-dim);
+            transition: transform 0.2s ease; display: inline-block;
+        }
+        .sidebar-section-label.open .chevron { transform: rotate(180deg); }
+        .layer-collapse {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s ease;
+        }
+        .layer-collapse.open { max-height: 600px; }
 
         /* Layer items */
         .layer-item {
-            display: flex; align-items: center; padding: 7px 18px;
+            display: flex; align-items: center; padding: clamp(4px,0.7vh,7px) 16px;
             cursor: pointer; user-select: none; transition: background 0.15s;
             border-left: 3px solid transparent;
         }
@@ -108,10 +125,10 @@
         .layer-count { font-size: 10px; color: var(--sidebar-dim); font-weight: 600; font-variant-numeric: tabular-nums; }
 
         /* Filters */
-        .filter-block { padding: 0 18px 12px; }
+        .filter-block { padding: 0 16px clamp(6px,0.9vh,12px); }
         .filter-label {
             display: block; font-size: 9px; font-weight: 700; color: var(--sidebar-dim);
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; margin-top: 12px;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: clamp(4px,0.6vh,7px); margin-top: clamp(7px,1vh,12px);
         }
         .filter-chips { display: flex; flex-wrap: wrap; gap: 4px; }
         .chip {
@@ -132,7 +149,7 @@
         .r-chip.active { background: #C4A35D; border-color: #C4A35D; color: var(--brand-cream); }
 
         .filter-select, .filter-input {
-            width: 100%; padding: 7px 10px; border: 1px solid rgba(254,255,248,0.15); border-radius: 3px;
+            width: 100%; padding: clamp(4px,0.7vh,7px) 10px; border: 1px solid rgba(254,255,248,0.15); border-radius: 3px;
             font-family: 'Montserrat', sans-serif; font-size: 11px;
             color: var(--brand-cream); background: rgba(45,45,42,0.4);
         }
@@ -140,7 +157,7 @@
         .filter-select:focus, .filter-input:focus { outline: none; border-color: var(--accent); }
         .filter-input::placeholder { color: var(--sidebar-dim); }
         .filter-reset {
-            width: 100%; padding: 8px; margin-top: 14px;
+            width: 100%; padding: clamp(5px,0.8vh,8px); margin-top: clamp(8px,1.2vh,14px);
             background: rgba(254,255,248,0.06); border: 1px solid rgba(254,255,248,0.15); border-radius: 3px;
             font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
             color: var(--sidebar-text); cursor: pointer; transition: background 0.15s;
@@ -148,54 +165,9 @@
         }
         .filter-reset:hover { background: rgba(254,255,248,0.1); }
 
-        /* ══ RIGHT FILTER PANEL ══════════════════════════════════════ */
-        .filter-panel {
-            position: fixed;
-            top: 0; right: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--brand-deep-moss);
-            z-index: 1500;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
-            box-shadow: -2px 0 16px rgba(45,45,42,0.4);
-            overflow-y: auto;
-        }
-        .filter-panel::-webkit-scrollbar { width: 4px; }
-        .filter-panel::-webkit-scrollbar-thumb { background: rgba(254,255,248,0.15); border-radius: 2px; }
-        .filter-panel.open { transform: translateX(0); }
-        .filter-panel-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 18px 16px;
-            border-bottom: 1px solid rgba(254,255,248,0.1);
-            flex-shrink: 0;
-        }
-        .filter-panel-title {
-            font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
-            color: var(--sidebar-dim); font-weight: 700;
-        }
-        .filter-panel-close {
-            width: 26px; height: 26px; border-radius: 3px;
-            background: rgba(254,255,248,0.06); border: 1px solid rgba(254,255,248,0.15);
-            color: var(--sidebar-text); cursor: pointer; font-size: 13px;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 0.15s; font-family: 'Montserrat', sans-serif;
-        }
-        .filter-panel-close:hover { background: rgba(254,255,248,0.14); }
-        .filter-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(45,45,42,0.3);
-            z-index: 1400;
-            backdrop-filter: blur(1px);
-        }
-        .filter-overlay.open { display: block; }
-
         /* Tool buttons */
         .tool-btn {
-            flex: 1; padding: 9px 8px;
+            flex: 1; padding: clamp(5px,0.8vh,9px) 8px;
             background: rgba(254,255,248,0.08); border: 1px solid rgba(254,255,248,0.2); border-radius: 3px;
             font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
             color: var(--sidebar-text); cursor: pointer; transition: all 0.15s;
@@ -205,11 +177,11 @@
         .tool-btn.active { background: #C4A35D; border-color: #C4A35D; color: var(--brand-cream); }
         .tool-btn.danger { background: rgba(166,124,124,0.15); border-color: rgba(166,124,124,0.3); color: #C4A0A0; }
         .tool-btn.danger:hover { background: rgba(166,124,124,0.28); }
-        .tool-hint { font-size: 9px; color: var(--sidebar-dim); line-height: 1.5; margin-top: 8px; }
+        .tool-hint { font-size: 9px; color: var(--sidebar-dim); line-height: 1.4; margin-top: clamp(4px,0.6vh,8px); }
 
         /* Analysis results panel */
         .analysis-panel {
-            margin-top: 10px;
+            margin-top: clamp(6px,0.9vh,10px);
             background: rgba(45,45,42,0.4);
             border: 1px solid rgba(254,255,248,0.12);
             border-radius: 4px; overflow: hidden;
@@ -232,7 +204,7 @@
         .analysis-count.wait { color: var(--sidebar-dim); font-style: italic; font-size: 9px; font-weight: 400; }
 
         /* Footer */
-        .sidebar-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
+        .sidebar-footer { margin-top: auto; padding: clamp(8px,1.1vh,14px) 16px; border-top: 1px solid rgba(254,255,248,0.1); flex-shrink: 0; }
         .sidebar-footer p { font-size: 9px; color: var(--sidebar-dim); line-height: 1.6; text-align: center; }
 
         /* ══ MAP ══════════════════════════════════════════════════ */
@@ -312,49 +284,98 @@
 
     <!-- Layers -->
     <div class="sidebar-section">
-        <div class="sidebar-section-label">Map Layers</div>
+        <div class="sidebar-section-label" id="layers-label" onclick="toggleLayersPanel()">
+            Map Layers<span class="chevron">▼</span>
+        </div>
+        <div class="layer-collapse" id="layers-collapse">
+            <div class="layer-item active" onclick="toggleLayer('woodland')">
+                <div class="layer-checkbox checked" id="cb-woodland" style="border-color:#6F8443;background:#6F8443;"></div>
+                <div class="layer-swatch" style="background:#6F8443;"></div>
+                <span class="layer-label">Ancient Woodland</span>
+                <span class="layer-count" id="count-woodland">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('greenbelt')">
+                <div class="layer-checkbox checked" id="cb-greenbelt" style="border-color:#8FAF6A;background:#8FAF6A;"></div>
+                <div class="layer-swatch" style="background:#8FAF6A;"></div>
+                <span class="layer-label">Green Belt</span>
+                <span class="layer-count" id="count-greenbelt">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('flood')">
+                <div class="layer-checkbox checked" id="cb-flood" style="border-color:#3A6FA0;background:#3A6FA0;"></div>
+                <div class="layer-swatch" style="background:linear-gradient(135deg,#3A6FA0 50%,#6FABD4 50%);"></div>
+                <span class="layer-label">Flood Zones</span>
+                <span class="layer-count" id="count-flood">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('conservation')">
+                <div class="layer-checkbox checked" id="cb-conservation" style="border-color:#A67C7C;background:#A67C7C;"></div>
+                <div class="layer-swatch" style="background:#A67C7C;"></div>
+                <span class="layer-label">Conservation Areas</span>
+                <span class="layer-count" id="count-conservation">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('sssi')">
+                <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#517C78;background:#517C78;"></div>
+                <div class="layer-swatch" style="background:#517C78;"></div>
+                <span class="layer-label">SSSI</span>
+                <span class="layer-count" id="count-sssi">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('listed')">
+                <div class="layer-checkbox checked" id="cb-listed" style="border-color:#5E7A8C;background:#5E7A8C;"></div>
+                <div class="layer-swatch" style="background:#5E7A8C;"></div>
+                <span class="layer-label">Listed Buildings</span>
+                <span class="layer-count" id="count-listed">–</span>
+            </div>
+            <div class="layer-item active" onclick="toggleLayer('roads')">
+                <div class="layer-checkbox checked" id="cb-roads" style="border-color:#93A392;background:#93A392;"></div>
+                <div class="layer-swatch" style="background:#93A392;"></div>
+                <span class="layer-label">Roads</span>
+                <span class="layer-count" id="count-roads">–</span>
+            </div>
+        </div>
+    </div>
 
-        <div class="layer-item active" onclick="toggleLayer('woodland')">
-            <div class="layer-checkbox checked" id="cb-woodland" style="border-color:#6F8443;background:#6F8443;"></div>
-            <div class="layer-swatch" style="background:#6F8443;"></div>
-            <span class="layer-label">Ancient Woodland</span>
-            <span class="layer-count" id="count-woodland">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('greenbelt')">
-            <div class="layer-checkbox checked" id="cb-greenbelt" style="border-color:#8FAF6A;background:#8FAF6A;"></div>
-            <div class="layer-swatch" style="background:#8FAF6A;"></div>
-            <span class="layer-label">Green Belt</span>
-            <span class="layer-count" id="count-greenbelt">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('flood')">
-            <div class="layer-checkbox checked" id="cb-flood" style="border-color:#3A6FA0;background:#3A6FA0;"></div>
-            <div class="layer-swatch" style="background:linear-gradient(135deg,#3A6FA0 50%,#6FABD4 50%);"></div>
-            <span class="layer-label">Flood Zones</span>
-            <span class="layer-count" id="count-flood">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('conservation')">
-            <div class="layer-checkbox checked" id="cb-conservation" style="border-color:#A67C7C;background:#A67C7C;"></div>
-            <div class="layer-swatch" style="background:#A67C7C;"></div>
-            <span class="layer-label">Conservation Areas</span>
-            <span class="layer-count" id="count-conservation">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('sssi')">
-            <div class="layer-checkbox checked" id="cb-sssi" style="border-color:#517C78;background:#517C78;"></div>
-            <div class="layer-swatch" style="background:#517C78;"></div>
-            <span class="layer-label">SSSI</span>
-            <span class="layer-count" id="count-sssi">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('listed')">
-            <div class="layer-checkbox checked" id="cb-listed" style="border-color:#5E7A8C;background:#5E7A8C;"></div>
-            <div class="layer-swatch" style="background:#5E7A8C;"></div>
-            <span class="layer-label">Listed Buildings</span>
-            <span class="layer-count" id="count-listed">–</span>
-        </div>
-        <div class="layer-item active" onclick="toggleLayer('roads')">
-            <div class="layer-checkbox checked" id="cb-roads" style="border-color:#93A392;background:#93A392;"></div>
-            <div class="layer-swatch" style="background:#93A392;"></div>
-            <span class="layer-label">Roads</span>
-            <span class="layer-count" id="count-roads">–</span>
+    <div class="sidebar-divider"></div>
+
+    <!-- Filters -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-label">Filters</div>
+        <div class="filter-block">
+
+            <span class="filter-label">Listed Building Grade</span>
+            <div class="filter-chips">
+                <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#5E7A8C;background:#5E7A8C;">All</div>
+                <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#5E7A8C;background:#5E7A8C;">Grade I</div>
+                <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#5E7A8C;background:#5E7A8C;">II*</div>
+                <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#5E7A8C;background:#5E7A8C;">Grade II</div>
+            </div>
+
+            <span class="filter-label">Woodland Type</span>
+            <div class="filter-chips">
+                <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#6F8443;background:#6F8443;">All</div>
+                <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#6F8443;background:#6F8443;">ASNW</div>
+                <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
+            </div>
+
+            <span class="filter-label">Flood Zone</span>
+            <div class="filter-chips">
+                <div class="chip active" data-filter="floodzone" data-value="all" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">All</div>
+                <div class="chip active" data-filter="floodzone" data-value="FZ3" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">Zone 3</div>
+                <div class="chip active" data-filter="floodzone" data-value="FZ2" data-color="#6FABD4" style="border-color:#6FABD4;background:#6FABD4;">Zone 2</div>
+            </div>
+
+            <span class="filter-label">Conservation Designated After</span>
+            <select class="filter-select" id="filter-ca-date" onchange="applyFilters()">
+                <option value="all">All dates</option>
+                <option value="1970">After 1970</option>
+                <option value="1980">After 1980</option>
+                <option value="1990">After 1990</option>
+                <option value="2000">After 2000</option>
+                <option value="2010">After 2010</option>
+            </select>
+
+            <span class="filter-label">Search by Name</span>
+            <input class="filter-input" type="text" id="filter-search" placeholder="Type to search…" oninput="applyFilters()" />
+
+            <button class="filter-reset" onclick="resetFilters()">↺ Reset All Filters</button>
         </div>
     </div>
 
@@ -362,15 +383,14 @@
 
     <!-- Site Analysis -->
     <div class="sidebar-section">
-        <div class="sidebar-section-label">Site Analysis</div>
-        <div class="filter-block" style="padding-top:4px;">
-            <span class="filter-label">Search Radius</span>
+        <div class="filter-block" style="padding-top:0;">
+            <span class="filter-label" style="margin-top:0;">Search Radius</span>
             <div class="filter-chips">
                 <div class="r-chip" id="rc-250" onclick="setRadius(250)">250m</div>
                 <div class="r-chip active" id="rc-500" onclick="setRadius(500)">500m</div>
                 <div class="r-chip" id="rc-1000" onclick="setRadius(1000)">1km</div>
             </div>
-            <div style="display:flex;gap:6px;margin-top:10px;">
+            <div style="display:flex;gap:6px;margin-top:clamp(6px,0.9vh,10px);">
                 <button class="tool-btn" id="btn-drop-pin" onclick="toggleDropPin()">+ Drop Pin</button>
                 <button class="tool-btn danger" id="btn-reset-pin" style="display:none;" onclick="resetPin()">✕ Clear</button>
             </div>
@@ -387,56 +407,6 @@
 
 <!-- MAP -->
 <div id="map"></div>
-
-<!-- Filter overlay backdrop -->
-<div class="filter-overlay" id="filter-overlay" onclick="closeFilterPanel()"></div>
-
-<!-- Right slide-out filter panel -->
-<div class="filter-panel" id="filter-panel">
-    <div class="filter-panel-header">
-        <span class="filter-panel-title">Filters</span>
-        <button class="filter-panel-close" onclick="closeFilterPanel()">✕</button>
-    </div>
-    <div class="filter-block" style="padding-top:4px;">
-
-        <span class="filter-label">Listed Building Grade</span>
-        <div class="filter-chips">
-            <div class="chip active" data-filter="grade" data-value="all"  style="border-color:#5E7A8C;background:#5E7A8C;">All</div>
-            <div class="chip active" data-filter="grade" data-value="I"    style="border-color:#5E7A8C;background:#5E7A8C;">Grade I</div>
-            <div class="chip active" data-filter="grade" data-value="II*"  style="border-color:#5E7A8C;background:#5E7A8C;">II*</div>
-            <div class="chip active" data-filter="grade" data-value="II"   style="border-color:#5E7A8C;background:#5E7A8C;">Grade II</div>
-        </div>
-
-        <span class="filter-label">Woodland Type</span>
-        <div class="filter-chips">
-            <div class="chip active" data-filter="woodland" data-value="all"  style="border-color:#6F8443;background:#6F8443;">All</div>
-            <div class="chip active" data-filter="woodland" data-value="ASNW" style="border-color:#6F8443;background:#6F8443;">ASNW</div>
-            <div class="chip active" data-filter="woodland" data-value="PAWS" style="border-color:#6F8443;background:#6F8443;">PAWS</div>
-        </div>
-
-        <span class="filter-label">Flood Zone</span>
-        <div class="filter-chips">
-            <div class="chip active" data-filter="floodzone" data-value="all" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">All</div>
-            <div class="chip active" data-filter="floodzone" data-value="FZ3" data-color="#3A6FA0" style="border-color:#3A6FA0;background:#3A6FA0;">Zone 3</div>
-            <div class="chip active" data-filter="floodzone" data-value="FZ2" data-color="#6FABD4" style="border-color:#6FABD4;background:#6FABD4;">Zone 2</div>
-        </div>
-
-        <span class="filter-label">Conservation Designated After</span>
-        <select class="filter-select" id="filter-ca-date" onchange="applyFilters()">
-            <option value="all">All dates</option>
-            <option value="1970">After 1970</option>
-            <option value="1980">After 1980</option>
-            <option value="1990">After 1990</option>
-            <option value="2000">After 2000</option>
-            <option value="2010">After 2010</option>
-        </select>
-
-        <span class="filter-label">Search by Name</span>
-        <input class="filter-input" type="text" id="filter-search" placeholder="Type to search…" oninput="applyFilters()" />
-
-        <button class="filter-reset" onclick="resetFilters()">↺ Reset All Filters</button>
-    </div>
-</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -480,27 +450,14 @@
             return btn;
         }
     });
-    const FilterCtrl = L.Control.extend({
-        options: { position: 'topright' },
-        onAdd: function() {
-            const btn = L.DomUtil.create('button', 'map-ctrl-btn');
-            btn.innerHTML = '⚙'; btn.title = 'Filters';
-            L.DomEvent.on(btn, 'click', openFilterPanel);
-            L.DomEvent.disableClickPropagation(btn);
-            return btn;
-        }
-    });
     new ResetViewCtrl().addTo(map);
     new FullscreenCtrl().addTo(map);
-    new FilterCtrl().addTo(map);
 
-    function openFilterPanel() {
-        document.getElementById('filter-panel').classList.add('open');
-        document.getElementById('filter-overlay').classList.add('open');
-    }
-    function closeFilterPanel() {
-        document.getElementById('filter-panel').classList.remove('open');
-        document.getElementById('filter-overlay').classList.remove('open');
+    function toggleLayersPanel() {
+        const label    = document.getElementById('layers-label');
+        const collapse = document.getElementById('layers-collapse');
+        const open     = collapse.classList.toggle('open');
+        if (open) label.classList.add('open'); else label.classList.remove('open');
     }
 
     function resetView() { map.flyTo([51.63493144942066, 0.2998021588012623], 13, { duration: 1.5 }); }
@@ -680,6 +637,7 @@
     function buildFloodLayer(data) {
         return L.geoJSON(data, {
             pane: 'polygonPane',
+            renderer: L.canvas(),
             style: function(f) {
                 const fz = f.properties.flood_zone;
                 return {
