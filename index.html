@@ -420,6 +420,7 @@
 
     // Custom draw-order panes
     map.createPane('roadPane').style.zIndex    = 350;
+    map.createPane('floodPane').style.zIndex   = 355; // canvas pane — below SVG polygons
     map.createPane('polygonPane').style.zIndex = 360;
     map.createPane('pointPane').style.zIndex   = 370;
 
@@ -636,8 +637,8 @@
 
     function buildFloodLayer(data) {
         return L.geoJSON(data, {
-            pane: 'polygonPane',
-            renderer: L.canvas({ pane: 'polygonPane' }),
+            pane: 'floodPane',
+            renderer: L.canvas({ pane: 'floodPane' }),
             style: function(f) {
                 const fz = f.properties.flood_zone;
                 return {
