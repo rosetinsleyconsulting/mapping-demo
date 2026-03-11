@@ -412,7 +412,7 @@
     function debug(msg) { console.log(msg); debugDiv.style.display = 'block'; debugDiv.innerHTML += msg + '<br>'; }
 
     // ── Map init ──────────────────────────────────────────────────
-    const map = L.map('map', { center: [51.625, 0.290], zoom: 13, minZoom: 8, maxZoom: 18, preferCanvas: true });
+    const map = L.map('map', { center: [51.625, 0.290], zoom: 13, minZoom: 8, maxZoom: 18, preferCanvas: false });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20
