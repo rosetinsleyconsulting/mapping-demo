@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTCLtd. Brand Guidelines</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&family=Yeseva+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Core Brand */
+            --brand-dark: #2D2D2A;
+            --brand-deep-moss: #454E3A;
+            --brand-moss: #6F8443;
+            --brand-muted: #DBDFD1;
+            --brand-cream: #FEFFF8;
+
+            /* Data Primary */
+            --data-rose: #A67C7C;
+            --data-slate: #5E7A8C;
+            --data-rye: #C4A35D;
+
+            /* Data Secondary */
+            --data-teal: #517C78;
+            --data-heather: #847C96;
+            --data-sage: #93A392;
+            --data-ochre: #B58B5F;
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--brand-cream); 
+            color: var(--brand-dark); 
+            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Layout */
+        .sidebar {
+            position: fixed;
+            width: 250px;
+            height: 100vh;
+            background: var(--brand-dark);
+            color: var(--brand-cream);
+            padding: 40px 20px;
+        }
+        .content { margin-left: 250px; padding: 80px 100px; max-width: 1200px; }
+
+        /* Typography */
+        h1, h2, .title-font { font-family: 'Yeseva One', serif; font-weight: 400; }
+        h1 { font-size: 48px; margin-bottom: 10px; color: var(--brand-deep-moss); }
+        h2 { font-size: 32px; border-bottom: 1px solid var(--brand-muted); padding-bottom: 10px; margin-top: 60px; }
+        h3 { font-family: 'Montserrat', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--brand-moss); }
+        p { font-size: 14px; margin-bottom: 20px; text-align: justify; }
+        
+        .mtp-box {
+            background: var(--brand-deep-moss);
+            color: var(--brand-cream);
+            padding: 40px;
+            border-radius: 4px;
+            margin: 40px 0;
+            font-style: italic;
+        }
+        .mtp-quote { font-family: 'Yeseva One', serif; font-size: 28px; line-height: 1.2; }
+
+        /* Color Grid */
+        .palette-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
+        .swatch { height: 120px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); }
+        .label { padding: 10px 0; font-family: monospace; font-size: 13px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid var(--brand-muted); }
+        th { font-size: 12px; text-transform: uppercase; color: var(--brand-moss); }
+
+        .tag { font-size: 10px; padding: 2px 6px; background: var(--brand-muted); border-radius: 3px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 style="color: white; border: none; margin-top: 0;">RTCLtd.</h2>
+    <p style="font-size: 11px; opacity: 0.7;">Brand Guidelines v1.0 <br> 2026 Edition</p>
+    <nav style="margin-top: 40px; font-size: 13px;">
+        <div style="margin-bottom: 15px;">1.1 Business Purpose</div>
+        <div style="margin-bottom: 15px;">1.2 Brand Personality</div>
+        <div style="margin-bottom: 15px;">1.3 Visual Identity</div>
+        <div style="margin-bottom: 15px;">1.4 Data Visualization</div>
+    </nav>
+</div>
+
+<div class="content">
+    <section>
+        <h3>1.1 Business Purpose</h3>
+        <h1>Massive Transformational Purpose</h1>
+        <p>RTCLtd. is driven by its ‘Massive Transformational Purpose’ (MTP). This is a new paradigm bigger than just a mission statement. It’s a highly aspirational tagline that tries to solve a global issue.</p>
+        
+        <div class="mtp-box">
+            <div class="mtp-quote">“Unlocking the power of place to shape a better future”</div>
+        </div>
+
+        <p>Our MTP is the guiding star of the organisation. We bridge the gap between the non-GIS user and the analyst, lifting up organisations that serve a greater purpose—whether that is green infrastructure, environmental initiatives, or charity work.</p>
+    </section>
+
+    <section>
+        <h3>1.2 Brand Personality</h3>
+        <h2>Legacy & Integrity</h2>
+        <p>RTCLtd. embodies a refined and discerning brand personality—rooted in tradition, guided by integrity, and expressed through quiet confidence. In a marketplace crowded with fast-growth, high-flash firms, we differentiate ourselves through strategic calm and generational perspective.</p>
+        <blockquote>"Quality over volume, relationship over transaction, insight over hype."</blockquote>
+    </section>
+
+    <section>
+        <h3>1.3 Visual Identity</h3>
+        <h2>The Core Palette</h2>
+        <div class="palette-section">
+            <div><div class="swatch" style="background:#2D2D2A"></div><div class="label">#2D2D2A<br>Charcoal Slate</div></div>
+            <div><div class="swatch" style="background:#454E3A"></div><div class="label">#454E3A<br>Deep Forest</div></div>
+            <div><div class="swatch" style="background:#6F8443"></div><div class="label">#6F8443<br>Moss Green</div></div>
+            <div><div class="swatch" style="background:#DBDFD1"></div><div class="label">#DBDFD1<br>Mist Neutral</div></div>
+            <div><div class="swatch" style="background:#FEFFF8"></div><div class="label">#FEFFF8<br>Cream Parchment</div></div>
+        </div>
+
+        <h2>Typography</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usage</th>
+                    <th>Typeface</th>
+                    <th>Size</th>
+                    <th>Weight</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="title-font" style="font-size: 24px;">Headings / Titles</td>
+                    <td>Yeseva One</td>
+                    <td>36px</td>
+                    <td>Regular</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; font-family: Montserrat;">H1 / H2 Headers</td>
+                    <td>Montserrat</td>
+                    <td>20px / 14px</td>
+                    <td>Bold / Regular</td>
+                </tr>
+                <tr>
+                    <td>Body Text / Paragraph</td>
+                    <td>Montserrat</td>
+                    <td>11px</td>
+                    <td>Regular / Italic</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h3>1.4 Data Visualization</h3>
+        <h2>Primary & Secondary Complementary Sets</h2>
+        <p>For geospatial mapping and data analytics, use these tones to maintain brand harmony while ensuring visual clarity.</p>
+        
+        <h3 style="margin-top: 30px;">Primary (High Importance)</h3>
+        <div class="palette-section">
+            <div><div class="swatch" style="background:#A67C7C"></div><div class="label">#A67C7C<br>Dusty Rose <span class="tag">Alpha 70% / 40%</span></div></div>
+            <div><div class="swatch" style="background:#5E7A8C"></div><div class="label">#5E7A8C<br>Slate Blue</div></div>
+            <div><div class="swatch" style="background:#6F8443"></div><div class="label">#6F8443<br>Brand Moss</div></div>
+            <div><div class="swatch" style="background:#C4A35D"></div><div class="label">#C4A35D<br>Golden Rye</div></div>
+        </div>
+
+        <h3 style="margin-top: 30px;">Secondary (Support Data)</h3>
+        <div class="palette-section">
+            <div><div class="swatch" style="background:#517C78"></div><div class="label">#517C78<br>Verdigris Teal</div></div>
+            <div><div class="swatch" style="background:#847C96"></div><div class="label">#847C96<br>Muted Heather</div></div>
+            <div><div class="swatch" style="background:#93A392"></div><div class="label">#93A392<br>Desert Sage</div></div>
+            <div><div class="swatch" style="background:#B58B5F"></div><div class="label">#B58B5F<br>Burnt Ochre</div></div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>
